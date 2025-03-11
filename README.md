@@ -1,6 +1,5 @@
-# Obsidian My Plugin
-
-bring vscode/windsurf/cursor to coding as obsidian to writing
+# Obsidian My Plugin 
+> open test-vault-myplugin as obsidian vault to test.
 
 - note formatter
 - metadata management
