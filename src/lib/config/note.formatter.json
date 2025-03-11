@@ -1,0 +1,65 @@
+{
+	"rules": [
+		{
+			"id": "clean_title_bold",
+			"name": "Clean title bold symbols",
+			"description": "Remove bold symbols (**) from markdown titles",
+			"enabled": true,
+			"pattern": {
+				"match": "^(#{1,6}\\s*)(.*?)\\*\\*(.*?)\\*\\*(.*?)$",
+				"flags": "gm",
+				"replacement": "$1$2$3$4"
+			},
+			"check": {
+				"match": "^#{1,6}.*?\\*\\*.*?\\*\\*.*$",
+				"flags": "m"
+			}
+		},
+		{
+			"id": "horizontal_rules",
+			"name": "Remove horizontal rules",
+			"description": "Remove divider lines (---, ___, ***) except in YAML frontmatter",
+			"enabled": true,
+			"pattern": {
+				"match": "^\\s*[-_*]{3,}\\s*$",
+				"flags": "gm",
+				"replacement": ""
+			},
+			"check": {
+				"match": "^\\s*[-_*]{3,}\\s*$",
+				"flags": "m"
+			},
+			"excludeFrontmatter": true
+		},
+		{
+			"id": "extra_blank_lines",
+			"name": "Remove extra blank lines",
+			"description": "Replace 3 or more consecutive blank lines with 2",
+			"enabled": true,
+			"pattern": {
+				"match": "\\n{3,}",
+				"flags": "g",
+				"replacement": "\n\n"
+			},
+			"check": {
+				"match": "\\n{3,}",
+				"flags": "g"
+			}
+		},
+		{
+			"id": "list_spacing",
+			"name": "Standardize list item spacing",
+			"description": "Ensure consistent spacing after list markers",
+			"enabled": true,
+			"pattern": {
+				"match": "^(\\s*[-*+])\\s+",
+				"flags": "gm",
+				"replacement": "$1 "
+			},
+			"check": {
+				"match": "^\\s*[-*+]\\s{2,}",
+				"flags": "m"
+			}
+		}
+	]
+}

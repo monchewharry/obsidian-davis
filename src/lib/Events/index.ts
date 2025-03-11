@@ -1,0 +1,1 @@
+export { onOpenHandler } from "./onOpen";
