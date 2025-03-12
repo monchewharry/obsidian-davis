@@ -2,6 +2,7 @@
 .vscode 
 main.css
 styles.css
+test-vault-myplugin/*
 
 # Intellij
 *.iml
