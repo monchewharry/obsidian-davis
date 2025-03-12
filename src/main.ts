@@ -20,22 +20,7 @@ export default class MyPlugin extends Plugin {
 	dataviewAPI: DataviewApi | null = null;
 
 	async onload() {
-		if (!isPluginEnabled(this.app, "dataview")) {
-			new Notice(
-				"❌ This plugin requires obsidian-dataview to be enabled"
-			);
-			return;
-		}
-		this.dataviewAPI = getAPI(this.app);
-		if (!this.dataviewAPI) {
-			new Notice("❌ Could not initialize Dataview API");
-			return;
-		}
-
-		new Notice("✅ DataView plugin is enabled");
-		await this.loadSettings();
-		await loadFormatterConfig(this.app);
-		new Notice("🚀my plugin loaded");
+		await this.checkLoading();
 
 		ribbonList(this.app).forEach((ribbon) => {
 			const ribbonIconEl = this.addRibbonIcon(
@@ -100,16 +85,35 @@ export default class MyPlugin extends Plugin {
 		new Notice("💥unloading my plugin");
 		console.log("unloading my plugin");
 	}
+	async saveSettings() {
+		await this.saveData(this.settings);
+	}
 
-	async loadSettings() {
+	private async loadSettings() {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
 	}
+	private async checkLoading() {
+		if (!isPluginEnabled(this.app, "dataview")) {
+			new Notice(
+				"❌ This plugin requires obsidian-dataview to be enabled"
+			);
+			return;
+		}
+		this.dataviewAPI = getAPI(this.app);
+		if (!this.dataviewAPI) {
+			new Notice("❌ Could not initialize Dataview API");
+			return;
+		}
 
-	async saveSettings() {
-		await this.saveData(this.settings);
+		new Notice("✅ DataView plugin is enabled");
+
+
+		await this.loadSettings();
+		await loadFormatterConfig(this.app);
+		new Notice("🚀my plugin loaded");
 	}
 }
