@@ -60,6 +60,21 @@
 				"match": "^\\s*[-*+]\\s{2,}",
 				"flags": "m"
 			}
+		},
+		{
+			"id": "markdown_to_wikilink",
+			"name": "Convert markdown links to wiki links",
+			"description": "Convert markdown-style links to Obsidian wiki links",
+			"enabled": true,
+			"pattern": {
+				"match": "\\[(.*?)\\]\\((#.*?)\\)",
+				"flags": "g",
+				"replacement": "[[#$1]]"
+			},
+			"check": {
+				"match": "\\[.*?\\]\\(#.*?\\)",
+				"flags": "g"
+			}
 		}
 	]
 }

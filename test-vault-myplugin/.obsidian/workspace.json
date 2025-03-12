@@ -1,14 +1,14 @@
 {
   "main": {
-    "id": "f0c8fd3fa523b29c",
+    "id": "91d7eff11efbb3e1",
     "type": "split",
     "children": [
       {
-        "id": "451d2978c0702c4b",
+        "id": "b7606475d05a1ff6",
         "type": "tabs",
         "children": [
           {
-            "id": "873ee7c4e1f6eebc",
+            "id": "68f7b03c19f5fb1d",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -23,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "0896d83385c2c6bb",
+    "id": "ead7d9455a9c2df6",
     "type": "split",
     "children": [
       {
-        "id": "33c010de1f18bb87",
+        "id": "35d9e2b4ff74561b",
         "type": "tabs",
         "children": [
           {
-            "id": "9a1ed5a80cabbdff",
+            "id": "aa04c2fb66d8b15e",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,7 +44,7 @@
             }
           },
           {
-            "id": "401c0e43bbdd6b95",
+            "id": "95794db8c590426e",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,7 +61,7 @@
             }
           },
           {
-            "id": "ee632d8ee3e4ac22",
+            "id": "2b02439515f2233a",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,15 +77,15 @@
     "width": 300
   },
   "right": {
-    "id": "e2e535457d3a142a",
+    "id": "6ee9076dde3270d7",
     "type": "split",
     "children": [
       {
-        "id": "b8ea988cbe9bd49c",
+        "id": "38a7cc177e79b21e",
         "type": "tabs",
         "children": [
           {
-            "id": "34cc280a27392e44",
+            "id": "44e7a78dbb474eb4",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -103,7 +103,7 @@
             }
           },
           {
-            "id": "aa3bc3fdd0afa300",
+            "id": "997d240143bb856b",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -116,7 +116,7 @@
             }
           },
           {
-            "id": "1b29a040abf4c093",
+            "id": "bf04e8a5ff190d12",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -131,7 +131,7 @@
             }
           },
           {
-            "id": "e27c2ae968ca0cca",
+            "id": "932e6f43a6f18e63",
             "type": "leaf",
             "state": {
               "type": "outline",
@@ -143,13 +143,47 @@
               "icon": "lucide-list",
               "title": "Outline"
             }
+          },
+          {
+            "id": "786aad1791591f94",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://monchewharry.github.io/",
+                "title": "Home | Résumé Davis",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "Home | Résumé Davis"
+            }
+          },
+          {
+            "id": "df342a6c4641fb7c",
+            "type": "leaf",
+            "state": {
+              "type": "console-view",
+              "state": {},
+              "icon": "qr-code",
+              "title": "Note Info"
+            }
+          },
+          {
+            "id": "00cec9f2f588760b",
+            "type": "leaf",
+            "state": {
+              "type": "iztro-view",
+              "state": {},
+              "icon": "grip",
+              "title": "iztro view"
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -158,16 +192,20 @@
       "canvas:Create new canvas": false,
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
-      "command-palette:Open command palette": false
+      "command-palette:Open command palette": false,
+      "my-plugin:test dev functions": false,
+      "my-plugin:Activate iztro view": false,
+      "my-plugin:Show Note Info": false,
+      "my-plugin:open gemini": false,
+      "my-plugin:open personal website": false
     }
   },
-  "active": "9a1ed5a80cabbdff",
-<<<<<<< HEAD
+  "active": "68f7b03c19f5fb1d",
   "lastOpenFiles": [
     "untracked/README.md",
     "untracked",
-    "tasks/example tasks.md",
     "tasks/checklist.md",
+    "tasks/example tasks.md",
     "tasks/Uncompleted Tasks.md",
     "tasks/Tasks in a specific section.md",
     "tasks/Tasks Completed on specific Date.md",
@@ -186,13 +224,10 @@
     "books/Origin of Species.md",
     "books/Catcher in the Rye.md",
     "books",
-    "blog/2021-08-08-a-post.md",
     "blog/2020-08-08-an-earlier-post.md",
+    "blog/2021-08-08-a-post.md",
     "blog",
     "Home.md",
     "Books.md"
   ]
-=======
-  "lastOpenFiles": []
->>>>>>> dev
 }

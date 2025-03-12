@@ -12,7 +12,7 @@ let formatterConfig: FormatterConfig = defaultConfig;
  */
 export const loadFormatterConfig = async (app: App): Promise<void> => {
 	try {
-		const configPath = app.vault.configDir + '/plugins/myPlugin/src/lib/config/note.formatter.json';
+		const configPath = app.vault.configDir + '/plugins/my-plugin/note.formatter.json';
 		const configFile = await app.vault.adapter.read(configPath);
 		const loadedConfig = JSON.parse(configFile) as FormatterConfig;
 		formatterConfig = { ...defaultConfig, ...loadedConfig };
