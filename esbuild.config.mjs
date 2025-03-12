@@ -89,7 +89,7 @@ const context = await esbuild.context({
 		css: banner,
 	},
 	entryPoints: ["./src/main.ts", "./src/styles.less"],
-	outdir: "test-vault-myplugin/.obsidian/plugins/my-plugin",
+	outdir: "./",
 	bundle: true,
 	external: [
 		"obsidian",
