@@ -162,6 +162,7 @@
     }
   },
   "active": "9a1ed5a80cabbdff",
+<<<<<<< HEAD
   "lastOpenFiles": [
     "untracked/README.md",
     "untracked",
@@ -191,4 +192,7 @@
     "Home.md",
     "Books.md"
   ]
+=======
+  "lastOpenFiles": []
+>>>>>>> dev
 }
