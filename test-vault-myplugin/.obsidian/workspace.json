@@ -1,14 +1,14 @@
 {
   "main": {
-    "id": "406a306bf5a4805a",
+    "id": "f0c8fd3fa523b29c",
     "type": "split",
     "children": [
       {
-        "id": "9ad8ed4cd784b49e",
+        "id": "451d2978c0702c4b",
         "type": "tabs",
         "children": [
           {
-            "id": "0bdc49afd21c7aa2",
+            "id": "873ee7c4e1f6eebc",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -23,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "28b28c54e5f5bcd5",
+    "id": "0896d83385c2c6bb",
     "type": "split",
     "children": [
       {
-        "id": "3bcdabbfa87a5eba",
+        "id": "33c010de1f18bb87",
         "type": "tabs",
         "children": [
           {
-            "id": "0ddd5fd7a40ff4a3",
+            "id": "9a1ed5a80cabbdff",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,7 +44,7 @@
             }
           },
           {
-            "id": "77a970f66c4c4bae",
+            "id": "401c0e43bbdd6b95",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,7 +61,7 @@
             }
           },
           {
-            "id": "5e15b3c2256fd6d5",
+            "id": "ee632d8ee3e4ac22",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,15 +77,15 @@
     "width": 300
   },
   "right": {
-    "id": "37111190cbee5c30",
+    "id": "e2e535457d3a142a",
     "type": "split",
     "children": [
       {
-        "id": "3c74888a4baf1f6c",
+        "id": "b8ea988cbe9bd49c",
         "type": "tabs",
         "children": [
           {
-            "id": "cfbe26eb0d8760ee",
+            "id": "34cc280a27392e44",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -103,7 +103,7 @@
             }
           },
           {
-            "id": "45acf17eab738573",
+            "id": "aa3bc3fdd0afa300",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -116,7 +116,7 @@
             }
           },
           {
-            "id": "df6436f06a9db344",
+            "id": "1b29a040abf4c093",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -131,7 +131,7 @@
             }
           },
           {
-            "id": "3f7a8702ce459e30",
+            "id": "e27c2ae968ca0cca",
             "type": "leaf",
             "state": {
               "type": "outline",
@@ -158,22 +158,17 @@
       "canvas:Create new canvas": false,
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "my-plugin:test dev functions": false,
-      "my-plugin:Activate iztro view": false,
-      "my-plugin:Show Note Info": false,
-      "my-plugin:open gemini": false,
-      "my-plugin:open personal website": false
+      "command-palette:Open command palette": false
     }
   },
-  "active": "0bdc49afd21c7aa2",
+  "active": "9a1ed5a80cabbdff",
   "lastOpenFiles": [
     "untracked/README.md",
     "untracked",
+    "tasks/Tasks in a specific section.md",
+    "tasks/Uncompleted Tasks.md",
     "tasks/example tasks.md",
     "tasks/checklist.md",
-    "tasks/Uncompleted Tasks.md",
-    "tasks/Tasks in a specific section.md",
     "tasks/Tasks Completed on specific Date.md",
     "tasks/Sorted Tasks.md",
     "tasks/Grouped Sorted Tasks.md",
@@ -186,9 +181,9 @@
     "example tables.md",
     "example lists.md",
     "example calendars.md",
+    "books/Catcher in the Rye.md",
     "books/The Great Gatsby.md",
     "books/Origin of Species.md",
-    "books/Catcher in the Rye.md",
     "books",
     "blog/2021-08-08-a-post.md",
     "blog/2020-08-08-an-earlier-post.md",
