@@ -5,22 +5,36 @@ import {
 	statusBarList,
 	viewList,
 } from "@/components/registerList";
-import SampleSettingTab from "@/components/settingTab";
-import { type MyPluginSettings } from "@/types/pluginSettings";
+import { DavisSettingTab, DavisSettings, DEFAULT_SETTINGS } from './settings';
 import { Notice, Plugin, type EventRef } from "obsidian";
 import { isPluginEnabled, loadFormatterConfig } from "@/lib/utils";
 import { DataviewApi, getAPI } from "obsidian-dataview";
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: "default",
-};
+// Settings are now imported from settings.ts
 
 export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+	settings: DavisSettings;
 	dataviewAPI: DataviewApi | null = null;
 
 	async onload() {
-		await this.checkLoading();
+		// Load settings first before anything else
+		await this.loadSettings();
+
+		// Then check for dependencies
+		if (!isPluginEnabled(this.app, "dataview")) {
+			new Notice("❌ This plugin requires obsidian-dataview to be enabled");
+			return;
+		}
+
+		this.dataviewAPI = getAPI(this.app);
+		if (!this.dataviewAPI) {
+			new Notice("❌ Could not initialize Dataview API");
+			return;
+		}
+
+		new Notice("✅ DataView plugin is enabled");
+		await loadFormatterConfig(this.app);
+		new Notice("🚀 Plugin loaded successfully");
 
 		ribbonList(this.app).forEach((ribbon) => {
 			const ribbonIconEl = this.addRibbonIcon(
@@ -62,12 +76,12 @@ export default class MyPlugin extends Plugin {
 			})
 		);
 
-		commandList(this.app).forEach((c) => {
+		commandList(this.app, this.settings).forEach((c) => {
 			this.addCommand(c);
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new DavisSettingTab(this.app, this));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -95,25 +109,7 @@ export default class MyPlugin extends Plugin {
 			DEFAULT_SETTINGS,
 			await this.loadData()
 		);
+		new Notice(`✅ Settings loaded ${this.settings.hugobloxPostsPath}`);
 	}
-	private async checkLoading() {
-		if (!isPluginEnabled(this.app, "dataview")) {
-			new Notice(
-				"❌ This plugin requires obsidian-dataview to be enabled"
-			);
-			return;
-		}
-		this.dataviewAPI = getAPI(this.app);
-		if (!this.dataviewAPI) {
-			new Notice("❌ Could not initialize Dataview API");
-			return;
-		}
 
-		new Notice("✅ DataView plugin is enabled");
-
-
-		await this.loadSettings();
-		await loadFormatterConfig(this.app);
-		new Notice("🚀my plugin loaded");
-	}
 }

@@ -12,6 +12,7 @@ import {
 } from "@/lib/Commands";
 import { onOpenHandler } from "@/lib/Events";
 import { CustomViewTypes } from "@/types/definitions";
+import DavisPlugin from '../main';
 import { activateSideBarView, setStatusBarText, testDV } from "@/lib/utils";
 import type { DataArray, DataviewPage } from "obsidian-dataview";
 import {
@@ -25,6 +26,17 @@ import {
 	TFile,
 	ViewCreator,
 } from "obsidian";
+import { DavisSettings } from "@/settings";
+
+interface HugoFrontmatter {
+	draft?: boolean;
+	authors?: string[];
+	title?: string;
+	date?: string;
+	summary?: string;
+	categories?: string[];
+	tags?: string[];
+}
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -140,7 +152,7 @@ export const eventRefList = (app: App): EventRef[] => {
 	];
 };
 
-export const commandList = (app: App): Command[] => {
+export const commandList = (app: App, settings: DavisSettings): Command[] => {
 	return [
 		{
 			id: "generate-resume",
@@ -204,6 +216,75 @@ export const commandList = (app: App): Command[] => {
 					new Notice(
 						`❌ Error creating/updating resume HTML file: ${error.message}`
 					);
+				}
+			},
+		},
+		{
+			id: "publish-hugoblox",
+			name: "Publish Note to hugoblox (personal website)",
+			editorCallback: async (editor, view) => {
+				if (!settings.hugobloxPostsPath) {
+					new Notice('❌ Please set your Hugo posts directory path in settings');
+					return;
+				}
+
+				const currentFile = view.file;
+				if (!currentFile) {
+					new Notice('❌ No active file');
+					return;
+				}
+
+				try {
+					// Use Node.js fs promises to copy file
+					const fs = require('fs').promises;
+					const path = require('path');
+					const YAML = require('yaml');
+
+					// Read the template yaml
+					const templatePath = path.join(app.vault.adapter.basePath, '.obsidian/plugins/my-plugin/hugoblog.header.yaml');
+					const templateContent = await fs.readFile(templatePath, 'utf8');
+					const templateYaml = YAML.parse(templateContent);
+
+					// Read current file content
+					const fileContent = await app.vault.read(currentFile);
+					const fileLines = fileContent.split('\n');
+					let frontmatterMatch = fileContent.match(/^---\n([\s\S]*?)\n---/);
+					let existingFrontmatter = {} as HugoFrontmatter;
+					let contentWithoutFrontmatter = fileContent;
+
+					if (frontmatterMatch) {
+						existingFrontmatter = (YAML.parse(frontmatterMatch[1]) || {}) as HugoFrontmatter;
+						contentWithoutFrontmatter = fileContent.slice(frontmatterMatch[0].length).trim();
+					}
+
+					// Configure new frontmatter
+					const newFrontmatter = {
+						...templateYaml,
+						draft: true,
+						authors: ['admin'],
+						title: currentFile.basename,
+						date: new Date(currentFile.stat.mtime).toISOString().split('T')[0],
+						// Keep user specified values if they exist
+						summary: existingFrontmatter.summary || templateYaml.summary,
+						categories: existingFrontmatter.categories || templateYaml.categories,
+						tags: existingFrontmatter.tags || templateYaml.tags
+					};
+
+					// Create new content with updated frontmatter
+					const newContent = `---\n${YAML.stringify(newFrontmatter)}---\n\n${contentWithoutFrontmatter}`;
+
+					// Ensure target directory exists
+					await fs.mkdir(settings.hugobloxPostsPath, { recursive: true });
+
+					// Create target path in Hugo posts directory
+					const targetPath = path.join(settings.hugobloxPostsPath, currentFile.name);
+
+					// Write the new content to target file
+					await fs.writeFile(targetPath, newContent, 'utf8');
+					new Notice(`✅ Published to Hugo: ${currentFile.name}`);
+				} catch (error) {
+					console.error('Error publishing to Hugo:', error);
+					new Notice(`❌ Error publishing to Hugo: ${error.message}`);
 				}
 			},
 		},
