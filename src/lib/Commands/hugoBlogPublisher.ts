@@ -1,5 +1,9 @@
 import { DavisSettings } from "@/settings";
 import { App, MarkdownFileInfo, MarkdownView, Notice } from "obsidian";
+import { HugoMarkdownConfig, hugoHeaderConfig } from "@/lib/config/configParser";
+import { parse, stringify } from 'yaml';
+import path from "path";
+import fs from 'fs/promises';
 // https://docs.hugoblox.com/reference/markdown/
 export interface MarkdownRule {
 	name: string;
@@ -29,15 +33,7 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 	}
 
 	try {
-		// Use Node.js fs promises to copy file
-		const fs = require('fs').promises;
-		const path = require('path');
-		const YAML = require('yaml');
-
-		// Read the template yaml
-		const templatePath = path.join(app.vault.adapter.basePath, '.obsidian/plugins/my-plugin/hugo.blogheader.yaml');
-		const templateContent = await fs.readFile(templatePath, 'utf8');
-		const templateYaml = YAML.parse(templateContent);
+		const templateYaml = await hugoHeaderConfig();
 
 		// Read current file content
 		const fileContent = await app.vault.read(currentFile);
@@ -46,7 +42,7 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 		let contentWithoutFrontmatter = fileContent;
 
 		if (frontmatterMatch) {
-			existingFrontmatter = (YAML.parse(frontmatterMatch[1]) || {}) as HugoFrontmatter;
+			existingFrontmatter = (parse(frontmatterMatch[1]) || {}) as HugoFrontmatter;
 			contentWithoutFrontmatter = fileContent.slice(frontmatterMatch[0].length).trim();
 		}
 
@@ -64,7 +60,7 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 		};
 
 		// Create new content with updated frontmatter
-		const newContent = `---\n${YAML.stringify(newFrontmatter)}---\n\n${contentWithoutFrontmatter}`;
+		const newContent = `---\n${stringify(newFrontmatter)}---\n\n${contentWithoutFrontmatter}`;
 
 		// Ensure target directory exists
 		await fs.mkdir(settings.hugobloxPostsPath, { recursive: true });
@@ -72,13 +68,8 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 		// Create target path in Hugo posts directory
 		const targetPath = path.join(settings.hugobloxPostsPath, currentFile.name);
 
-		// Load markdown conversion rules
-		const rulesPath = path.join(app.vault.adapter.basePath, '.obsidian/plugins/my-plugin/hugo.markdown.json');
-		const rulesContent = await fs.readFile(rulesPath, 'utf8');
-		const { markdownRules } = JSON.parse(rulesContent);
-
 		// Apply markdown conversion rules
-		const convertedContent = (markdownRules as MarkdownRule[]).reduce((content: string, rule: MarkdownRule) => {
+		const convertedContent = HugoMarkdownConfig.reduce((content: string, rule: MarkdownRule) => {
 			return content.replace(new RegExp(rule.pattern, 'g'), rule.replacement);
 		}, newContent);
 

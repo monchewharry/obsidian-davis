@@ -33,7 +33,7 @@ export default class MyPlugin extends Plugin {
 		}
 
 		new Notice("✅ DataView plugin is enabled");
-		await loadFormatterConfig(this.app);
+		loadFormatterConfig();
 		new Notice("🚀 Plugin loaded successfully");
 
 		ribbonList(this.app).forEach((ribbon) => {
