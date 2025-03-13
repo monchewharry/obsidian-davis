@@ -27,6 +27,7 @@
 		"isolatedModules": true,
 		"strictNullChecks": true,
 		"skipLibCheck": true,
+		"resolveJsonModule": true,
 		"lib": [
 			"DOM",
 			"ES5",
@@ -37,7 +38,8 @@
 	"include": [
 		"src/**/*.ts",
 		"src/**/*.tsx",
-		"src/**/*.d.ts"
+		"src/**/*.d.ts",
+		"src/**/*.json"
 	],
 	"exclude": [
 		".hotreload"

@@ -1,5 +1,7 @@
 import { FormatterConfig } from "@/types/formatter";
 import { App } from "obsidian";
+import configData from "@/lib/config/note.formatter.json";
+const loadedConfig = configData as FormatterConfig;
 
 const defaultConfig: FormatterConfig = {
 	rules: []
@@ -12,9 +14,9 @@ let formatterConfig: FormatterConfig = defaultConfig;
  */
 export const loadFormatterConfig = async (app: App): Promise<void> => {
 	try {
-		const configPath = app.vault.configDir + '/plugins/my-plugin/note.formatter.json';
-		const configFile = await app.vault.adapter.read(configPath);
-		const loadedConfig = JSON.parse(configFile) as FormatterConfig;
+		// const configPath = app.vault.configDir + '/plugins/my-plugin/note.formatter.json';
+		// const configFile = await app.vault.adapter.read(configPath);
+		// const loadedConfig = JSON.parse(configFile) as FormatterConfig;
 		formatterConfig = { ...defaultConfig, ...loadedConfig };
 	} catch (error) {
 		console.error('Error loading formatter config:', error);
