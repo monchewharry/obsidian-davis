@@ -41,7 +41,8 @@ const copyPlugin = {
 				await copyFile('main.js', `${vaultPath}/.obsidian/plugins/my-plugin/main.js`);
 				await copyFile('styles.css', `${vaultPath}/.obsidian/plugins/my-plugin/styles.css`);
 				await copyFile('note.formatter.json', `${vaultPath}/.obsidian/plugins/my-plugin/note.formatter.json`);
-				await copyFile('hugoblog.header.yaml', `${vaultPath}/.obsidian/plugins/my-plugin/hugoblog.header.yaml`);
+				await copyFile('hugo.blogheader.yaml', `${vaultPath}/.obsidian/plugins/my-plugin/hugo.blogheader.yaml`);
+				await copyFile('hugo.markdown.json', `${vaultPath}/.obsidian/plugins/my-plugin/hugo.markdown.json`);
 				// Copy all content from mockOb directory
 				await copyDir('mockOb', `${vaultPath}`);
 				console.log('✓ Plugin files copied successfully');
@@ -65,7 +66,8 @@ const copyPlugin2 = {
 				await copyFile('main.js', `${pluginPath}/main.js`);
 				await copyFile('styles.css', `${pluginPath}/styles.css`);
 				await copyFile('note.formatter.json', `${pluginPath}/note.formatter.json`);
-				await copyFile('hugoblog.header.yaml', `${pluginPath}/hugoblog.header.yaml`);
+				await copyFile('hugo.blogheader.yaml', `${pluginPath}/hugo.blogheader.yaml`);
+				await copyFile('hugo.markdown.json', `${pluginPath}/hugo.markdown.json`);
 				await copyFile('.hotreload', `${pluginPath}/.hotreload`);
 				console.log('✓ Plugin files copied successfully into', pluginPath);
 			} catch (error) {

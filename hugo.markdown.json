@@ -1,0 +1,40 @@
+{
+	"markdownRules": [
+		{
+			"name": "callout-note",
+			"description": "Convert Obsidian callouts to Hugo callouts",
+			"pattern": "> \\[!(NOTE)\\]\n((> .*\n)+)",
+			"replacement": "{{% callout note %}}\n$2\n{{% /callout %}}\n"
+		},
+		{
+			"name": "callout-warning",
+			"description": "Convert Obsidian callouts to Hugo callouts",
+			"pattern": "> \\[!(WARNING)\\]\n((> .*\n)+)",
+			"replacement": "{{% callout warning %}}\n$2\n{{% /callout %}}\n"
+		},
+		{
+			"name": "wiki_link_alias",
+			"description": "Convert wiki links with aliases from [[page|alias]] to alias (page)",
+			"pattern": "\\[\\[([^\\]|]+)\\|([^\\]]+)\\]\\]",
+			"replacement": "$2 ($1)"
+		},
+		{
+			"name": "italics",
+			"description": "Convert italics from *text* to _text_",
+			"pattern": "(?<!\\*)\\*([^\\*\\n]+)\\*(?!\\*)",
+			"replacement": "_$1_"
+		},
+		{
+			"name": "highlight",
+			"description": "Convert highlights from ===text=== to <mark>text</mark>",
+			"pattern": "={2}([^=\\n]+)={2}",
+			"replacement": "<mark>$1</mark>"
+		},
+		{
+			"name": "internal_link",
+			"description": "Convert internal links from [[#a title]] to [a title](#a title)",
+			"pattern": "\\[\\[#([^\\]]+)\\]\\]",
+			"replacement": "[$1]"
+		}
+	]
+}
