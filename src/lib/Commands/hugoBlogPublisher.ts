@@ -1,6 +1,6 @@
 import { DavisSettings } from "@/settings";
 import { App, MarkdownFileInfo, MarkdownView, Notice } from "obsidian";
-
+// https://docs.hugoblox.com/reference/markdown/
 export interface MarkdownRule {
 	name: string;
 	description: string;
