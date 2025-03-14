@@ -53,8 +53,7 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 			authors: ['admin'],
 			title: currentFile.basename,
 			date: new Date(currentFile.stat.mtime).toISOString().split('T')[0],
-			// Keep user specified values if they exist
-			summary: existingFrontmatter.summary || templateYaml.summary,
+			summary: existingFrontmatter.summary || "Brief description of the note.",
 			categories: existingFrontmatter.categories || templateYaml.categories,
 			tags: existingFrontmatter.tags || templateYaml.tags
 		};
