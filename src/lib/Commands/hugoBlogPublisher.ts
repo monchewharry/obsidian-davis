@@ -33,7 +33,7 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 	}
 
 	try {
-		const templateYaml = await hugoHeaderConfig();
+		const templateYaml = await hugoHeaderConfig(app);
 
 		// Read current file content
 		const fileContent = await app.vault.read(currentFile);
