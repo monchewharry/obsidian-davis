@@ -1,5 +1,5 @@
 import { type App, MarkdownView, Notice, TFile, TFolder } from "obsidian";
-import BatchMetadataModal from "@/components/Modals/batchMetadataModal";
+import BatchMetadataModal, { type MetadataMode } from "@/components/Modals/batchMetadataModal";
 import MetadataModal from "@/components/Modals/metaDataModal";
 
 /**
@@ -32,7 +32,7 @@ export const updateMetadataBatchCommand = (app: App) => {
 
 	new BatchMetadataModal(
 		app,
-		async (field: string, value: string, folder: TFolder) => {
+		async (field: string, value: string, folder: TFolder, mode: MetadataMode) => {
 			let processedCount = 0;
 			let updatedCount = 0;
 
@@ -43,18 +43,26 @@ export const updateMetadataBatchCommand = (app: App) => {
 						try {
 							await app.fileManager.processFrontMatter(child, (frontmatter) => {
 								const oldValue = frontmatter[field];
-								if (value === '' || value === null) {
-									// Delete the field if value is empty or NULL
+								
+								if (mode === 'update') {
+									if (value === '' || value === null) {
+										// Delete the field if value is empty or NULL
+										delete frontmatter[field];
+										if (oldValue !== undefined) {
+											updatedCount++;
+										}
+									} else {
+										// Update the field with new value
+										frontmatter[field] = value;
+										if (oldValue !== value) {
+											updatedCount++;
+										}
+									}
+								} else if (mode === 'rename' && oldValue !== undefined) {
+									// Rename field key while preserving its value
 									delete frontmatter[field];
-									if (oldValue !== undefined) {
-										updatedCount++;
-									}
-								} else {
-									// Update the field with new value
-									frontmatter[field] = value;
-									if (oldValue !== value) {
-										updatedCount++;
-									}
+									frontmatter[value] = oldValue;
+									updatedCount++;
 								}
 							});
 						} catch (error) {
@@ -68,7 +76,10 @@ export const updateMetadataBatchCommand = (app: App) => {
 
 			try {
 				await processFiles(folder);
-				new Notice(`✅ Updated ${updatedCount} of ${processedCount} files with metadata field '${field}'`);
+				const message = mode === 'update'
+					? `✅ Updated ${updatedCount} of ${processedCount} files with metadata field '${field}'`
+					: `✅ Renamed field '${field}' to '${value}' in ${updatedCount} of ${processedCount} files`;
+				new Notice(message);
 			} catch (error) {
 				console.error('Error during batch metadata update:', error);
 				new Notice('❌ Error updating metadata. Check console for details.');

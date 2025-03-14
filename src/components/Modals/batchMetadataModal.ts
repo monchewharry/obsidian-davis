@@ -2,19 +2,22 @@ import { getFolderFrontmatterKeys } from "@/lib/utils";
 import { App, Notice, TFolder } from "obsidian";
 import MyModal from "@/lib/myModal";
 
+export type MetadataMode = 'update' | 'rename';
+
 export default class BatchMetadataModal extends MyModal {
 	private field = "";
 	private value = "";
 	private selectedFolder: TFolder | null = null;
-	private onSubmit: (field: string, value: string, folder: TFolder) => void;
+	private onSubmit: (field: string, value: string, folder: TFolder, mode: MetadataMode) => void;
 	private defaultFolderPath: string;
+	private mode: MetadataMode = 'update';
 
 	constructor(
 		app: App,
-		onSubmit: (field: string, value: string, folder: TFolder) => void,
+		onSubmit: (field: string, value: string, folder: TFolder, mode: MetadataMode) => void,
 		defaultFolderPath?: string
 	) {
-		super(app, "Batch Add/Update Metadata Field");
+		super(app, "Batch Metadata Field Manager");
 		this.onSubmit = onSubmit;
 		this.defaultFolderPath = defaultFolderPath || "/";
 	}
@@ -52,10 +55,38 @@ export default class BatchMetadataModal extends MyModal {
 					this.defaultFolderPath
 				) as TFolder);
 
+		// Mode selection
+		const modeContainer = contentEl.createDiv();
+		modeContainer.style.marginTop = "20px";
+		modeContainer.createEl("label", { text: "Operation mode:" });
+		const modeSelect = modeContainer.createEl("select");
+		modeSelect.style.width = "200px";
+
+		// Add mode options
+		const updateOption = modeSelect.createEl("option");
+		updateOption.value = "update";
+		updateOption.text = "Update/Add Field";
+		updateOption.selected = true;
+
+		const renameOption = modeSelect.createEl("option");
+		renameOption.value = "rename";
+		renameOption.text = "Rename Field";
+
+		modeSelect.addEventListener("change", (e) => {
+			this.mode = (e.target as HTMLSelectElement).value as MetadataMode;
+			// Update value input label and placeholder based on mode
+			valueLabel.setText(this.mode === 'update' ? "Value:" : "New field key:");
+			valueInput.placeholder = this.mode === 'update' ? "Enter value" : "Enter new field key";
+			submitButton.setText(this.mode === 'update' ? "Update Metadata" : "Rename Field");
+			footnoteText.setText(this.mode === 'update'
+				? "Note: Providing an empty value will delete the field key from the files."
+				: "Note: This will rename the selected field key while preserving its values.");
+		});
+
 		// Field key input container
 		const fieldContainer = contentEl.createDiv();
 		fieldContainer.style.marginTop = "20px";
-		fieldContainer.createEl("label", { text: "Field key:" });
+		fieldContainer.createEl("label", { text: this.mode === 'update' ? "Field key:" : "Original field key:" });
 
 		// Create a container for the field input and dropdown
 		const fieldInputContainer = fieldContainer.createDiv();
@@ -126,11 +157,14 @@ export default class BatchMetadataModal extends MyModal {
 			}
 		});
 
-		// Value input
+		// Value/New Key input
 		const valueContainer = contentEl.createDiv();
 		valueContainer.style.marginTop = "10px";
-		valueContainer.createEl("label", { text: "Value:" });
-		const valueInput = valueContainer.createEl("input", { type: "text" });
+		const valueLabel = valueContainer.createEl("label", { text: "Value:" });
+		const valueInput = valueContainer.createEl("input", {
+			type: "text",
+			placeholder: "Enter value"
+		});
 		valueInput.style.width = "200px";
 		valueInput.addEventListener("input", (e) => {
 			this.value = (e.target as HTMLInputElement).value;
@@ -141,14 +175,14 @@ export default class BatchMetadataModal extends MyModal {
 		buttonContainer.style.marginTop = "20px";
 		buttonContainer.style.textAlign = "right";
 		const submitButton = buttonContainer.createEl("button", {
-			text: "Add Metadata to All Files",
+			text: "Update Metadata",
 		});
 		submitButton.addEventListener("click", () => {
-			if (!this.field || !this.selectedFolder) {
-				new Notice("⚠️ Please fill in all fields");
+			if (!this.field || !this.selectedFolder || (this.mode === 'rename' && !this.value)) {
+				new Notice("⚠️ Please fill in all required fields");
 				return;
 			}
-			this.onSubmit(this.field, this.value, this.selectedFolder);
+			this.onSubmit(this.field, this.value, this.selectedFolder, this.mode);
 			this.close();
 		});
 
@@ -156,7 +190,7 @@ export default class BatchMetadataModal extends MyModal {
 		const footnoteContainer = contentEl.createDiv({
 			cls: "modal_footnote",
 		});
-		footnoteContainer.createEl("p", {
+		const footnoteText = footnoteContainer.createEl("p", {
 			text: "Note: Providing an empty value will delete the field key from the files.",
 		});
 	}
