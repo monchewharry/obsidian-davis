@@ -1,4 +1,4 @@
-import { DavisSettings } from "@/settings";
+import { DavisSettings } from "@/lib/config/settings";
 import { App, MarkdownFileInfo, MarkdownView, Notice } from "obsidian";
 import { HugoMarkdownConfig, hugoHeaderConfig } from "@/lib/config/configParser";
 import { parse, stringify } from 'yaml';

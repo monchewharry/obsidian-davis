@@ -5,10 +5,11 @@ import {
 	statusBarList,
 	viewList,
 } from "@/components/registerList";
-import { DavisSettingTab, DavisSettings, DEFAULT_SETTINGS } from './settings';
-import { Notice, Plugin, type EventRef } from "obsidian";
+import { DavisSettings, DEFAULT_SETTINGS } from '@/lib/config/settings';
+import { Notice, Plugin } from "obsidian";
 import { isPluginEnabled, loadFormatterConfig } from "@/lib/utils";
 import { DataviewApi, getAPI } from "obsidian-dataview";
+import { DavisSettingTab } from "@/components/settingTab";
 
 // Settings are now imported from settings.ts
 
@@ -76,7 +77,7 @@ export default class MyPlugin extends Plugin {
 			})
 		);
 
-		commandList(this.app, this.settings).forEach((c) => {
+		commandList(this.app, this.settings, this).forEach((c) => {
 			this.addCommand(c);
 		});
 

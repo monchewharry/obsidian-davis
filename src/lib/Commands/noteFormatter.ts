@@ -9,6 +9,10 @@ import { needsFormatting, processContent } from "@/lib/utils";
  */
 export const formatNote = async (input: MarkdownView | TFile, app: App): Promise<boolean> => {
 	try {
+		// Only process markdown files
+		if (input instanceof TFile && !input.extension.toLowerCase().endsWith('md')) {
+			return false;
+		}
 		let content: string;
 
 		// Get content based on input type

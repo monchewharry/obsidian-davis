@@ -1,0 +1,56 @@
+import { PluginSettingTab, App, Setting, Notice } from "obsidian";
+import DavisPlugin from '@/main';
+export class DavisSettingTab extends PluginSettingTab {
+	plugin: DavisPlugin;
+
+	constructor(app: App, plugin: DavisPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
+
+	display(): void {
+		const { containerEl } = this;
+		containerEl.empty();
+		containerEl.createEl('h4', { text: 'Hugo Blox Settings' });
+		new Setting(containerEl)
+			.setName('Hugo Posts Directory')
+			.setDesc('Path to your Hugo website posts directory')
+			.addText(text => text
+				.setPlaceholder('Enter path...')
+				.setValue(this.plugin.settings.hugobloxPostsPath)
+				.onChange(async (value) => {
+					this.plugin.settings.hugobloxPostsPath = value;
+					await this.plugin.saveSettings();
+					new Notice('✅ Hugo posts directory path updated');
+				}));
+
+		containerEl.createEl('h4', { text: 'Regular Expression Settings' });
+		new Setting(containerEl)
+			.setName('Case Insensitive')
+			.setDesc('When using regular expressions, apply the \'/i\' modifier for case insensitive search)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.caseInsensitive)
+				.onChange(async (value) => {
+					this.plugin.settings.caseInsensitive = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Process \\n as line break')
+			.setDesc('When \'\\n\' is used in the replace field, a \'line break\' will be inserted accordingly')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.processLineBreak)
+				.onChange(async (value) => {
+					this.plugin.settings.processLineBreak = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Prefill Find Field')
+			.setDesc('Copy the currently selected text (if any) into the \'Find\' text field. This setting is only applied if the selection does not contain linebreaks')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.prefillFind)
+				.onChange(async (value) => {
+					this.plugin.settings.prefillFind = value;
+					await this.plugin.saveSettings();
+				}));
+	}
+}

@@ -9,12 +9,11 @@ import {
 	parseResumeYaml,
 	updateMetadataBatchCommand,
 	updateMetadataCommand,
+	regexCommand,
 } from "@/lib/Commands";
 import { onOpenHandler } from "@/lib/Events";
 import { CustomViewTypes } from "@/types/definitions";
-import DavisPlugin from '../main';
 import { activateSideBarView, setStatusBarText, testDV } from "@/lib/utils";
-import type { DataArray, DataviewPage } from "obsidian-dataview";
 import {
 	App,
 	Command,
@@ -25,9 +24,11 @@ import {
 	Notice,
 	TFile,
 	ViewCreator,
+	Plugin,
 } from "obsidian";
-import { DavisSettings } from "@/settings";
+import { DavisSettings } from "@/lib/config/settings";
 import { HugoFrontmatter, MarkdownRule, publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
+import RegexFindReplaceModal from "./Modals/regexFindReplaceModel";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -143,8 +144,15 @@ export const eventRefList = (app: App): EventRef[] => {
 	];
 };
 
-export const commandList = (app: App, settings: DavisSettings): Command[] => {
+export const commandList = (app: App, settings: DavisSettings, plugin: Plugin): Command[] => {
 	return [
+		{
+			id: 'my-regex-replace',
+			name: 'Find and Replace using regular expressions',
+			editorCallback: (editor) => {
+				regexCommand(app, editor, settings, plugin);
+			},
+		},
 		{
 			id: "generate-resume",
 			name: "Generate Resume",
