@@ -48,10 +48,24 @@ export class VideoView extends MyItemView {
             .video-item:hover {
                 transform: translateY(-2px);
             }
-            .video-item video {
+            .video-item {
+                display: flex;
+                flex-direction: column;
+            }
+            .video-wrapper {
+                position: relative;
                 width: 100%;
-                max-height: 200px;
-                object-fit: cover;
+                background: var(--background-primary);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 150px;
+            }
+            .video-item video {
+                max-width: 100%;
+                max-height: 400px;
+                width: auto;
+                height: auto;
             }
             .video-info {
                 padding: 10px;
@@ -101,17 +115,37 @@ export class VideoView extends MyItemView {
 
         const itemEl = this.videoContainerEl.createDiv({ cls: "video-item" });
         
+        // Create video wrapper
+        const videoWrapper = itemEl.createDiv({ cls: "video-wrapper" });
+
         // Create video element
-        const videoEl = itemEl.createEl("video", {
+        const videoEl = videoWrapper.createEl("video", {
             attr: {
                 controls: "",
-                preload: "metadata"
+                preload: "metadata",
+                loop: "true"
             }
         });
 
         // Get video URL
         const videoUrl = this.app.vault.getResourcePath(file);
         videoEl.src = videoUrl;
+
+        // Add load event listener to handle video dimensions
+        videoEl.addEventListener('loadedmetadata', () => {
+            const aspectRatio = videoEl.videoWidth / videoEl.videoHeight;
+            
+            // If video is wider than tall, constrain by width
+            if (aspectRatio > 1) {
+                videoEl.style.width = '100%';
+                videoEl.style.height = 'auto';
+            } 
+            // If video is taller than wide, constrain by height
+            else {
+                videoEl.style.width = 'auto';
+                videoEl.style.height = '400px';
+            }
+        });
 
         // Create info section
         const infoEl = itemEl.createDiv({ cls: "video-info" });
