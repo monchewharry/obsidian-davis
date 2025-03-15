@@ -9,11 +9,12 @@ test-vault-myplugin/*
 # npm
 node_modules
 
-# Don't include the compiled main.js, main.css,style.css file in the repo.
+# Don't include the compiled main.js, main.css,styles.js,style.css file in the repo.
 # They should be uploaded to GitHub releases instead.
 main.js
 main.css
 styles.css
+styles.js
 # Exclude sourcemaps
 *.map
 
