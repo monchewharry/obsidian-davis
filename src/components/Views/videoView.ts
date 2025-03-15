@@ -20,11 +20,17 @@ export class VideoView extends MyItemView {
         const { containerEl } = this;
         containerEl.empty();
 
-        // Create main container
-        this.videoContainerEl = containerEl.createDiv({ cls: "video-archive-container" });
-        
         // Add styles
         this.addStyles();
+
+        // Set container to fill available space
+        containerEl.style.display = 'flex';
+        containerEl.style.flexDirection = 'column';
+        containerEl.style.height = '100%';
+        containerEl.style.overflow = 'hidden';
+        
+        // Create main container
+        this.videoContainerEl = containerEl.createDiv({ cls: "video-archive-container" });
         
         // Load and display videos
         await this.loadVideos();
@@ -34,45 +40,44 @@ export class VideoView extends MyItemView {
         const styleEl = document.createElement('style');
         styleEl.textContent = `
             .video-archive-container {
-                padding: 20px;
+                padding: 0;
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 20px;
+                grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+                gap: 1px;
+                height: 100%;
+                overflow-y: auto;
+                background: var(--background-modifier-border);
             }
             .video-item {
-                background: var(--background-secondary);
-                border-radius: 8px;
+                background: var(--background-primary);
                 overflow: hidden;
-                transition: transform 0.2s;
-            }
-            .video-item:hover {
-                transform: translateY(-2px);
-            }
-            .video-item {
                 display: flex;
                 flex-direction: column;
+                height: calc(100vh - 100px);
             }
             .video-wrapper {
                 position: relative;
-                width: 100%;
-                background: var(--background-primary);
+                flex: 1;
+                background: var(--background-secondary);
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                min-height: 150px;
+                overflow: hidden;
             }
             .video-item video {
-                max-width: 100%;
-                max-height: 400px;
-                width: auto;
-                height: auto;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
             }
             .video-info {
-                padding: 10px;
+                padding: 12px;
+                background: var(--background-primary);
+                border-top: 1px solid var(--background-modifier-border);
             }
             .video-title {
                 font-size: 14px;
-                margin-bottom: 5px;
+                font-weight: 500;
+                margin-bottom: 4px;
                 color: var(--text-normal);
             }
             .video-meta {
@@ -131,21 +136,7 @@ export class VideoView extends MyItemView {
         const videoUrl = this.app.vault.getResourcePath(file);
         videoEl.src = videoUrl;
 
-        // Add load event listener to handle video dimensions
-        videoEl.addEventListener('loadedmetadata', () => {
-            const aspectRatio = videoEl.videoWidth / videoEl.videoHeight;
-            
-            // If video is wider than tall, constrain by width
-            if (aspectRatio > 1) {
-                videoEl.style.width = '100%';
-                videoEl.style.height = 'auto';
-            } 
-            // If video is taller than wide, constrain by height
-            else {
-                videoEl.style.width = 'auto';
-                videoEl.style.height = '400px';
-            }
-        });
+
 
         // Create info section
         const infoEl = itemEl.createDiv({ cls: "video-info" });
