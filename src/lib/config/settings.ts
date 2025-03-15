@@ -22,6 +22,7 @@ interface YTranscriptSettings {
 
 interface VideoArchiveSettings {
 	videoArchivePath: string;
+	ffmpegPath: string;
 }
 
 export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings, YTranscriptSettings, VideoArchiveSettings {
@@ -43,4 +44,5 @@ export const DEFAULT_SETTINGS: DavisSettings = {
 	country: "EN",
 	leafUrls: [],
 	videoArchivePath: 'private/twitter/video-archive',
+	ffmpegPath: '/opt/homebrew/bin/ffmpeg',
 };

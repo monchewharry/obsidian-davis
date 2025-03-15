@@ -1,44 +1,52 @@
 import { CustomViewTypes } from "@/types/viewType";
 import { MyItemView } from "@/lib/myItemView";
-import { TFile, WorkspaceLeaf } from "obsidian";
+import { Menu, TFile, WorkspaceLeaf, Notice } from "obsidian";
+import { exec } from "child_process";
 import MyPlugin from "@/main";
+import { error } from "console";
 
 export class VideoView extends MyItemView {
-    private videoContainerEl?: HTMLElement;
-    private plugin: MyPlugin;
+	private videoContainerEl?: HTMLElement;
+	private consoleEl?: HTMLElement;
+	private currentVideoFile?: TFile;
+	private plugin: MyPlugin;
 
-    get targetFolder(): string {
-        return this.plugin.settings.videoArchivePath;
-    }
+	get targetFolder(): string {
+		return this.plugin.settings.videoArchivePath;
+	}
 
-    constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
-        super(leaf, CustomViewTypes.VIDEO_VIEW_TYPE, "video", "Video Archive");
-        this.plugin = plugin;
-    }
+	constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
+		super(leaf, CustomViewTypes.VIDEO_VIEW_TYPE, "video", "Video Archive");
+		this.plugin = plugin;
+	}
 
-    async onOpen() {
-        const { containerEl } = this;
-        containerEl.empty();
+	async onOpen() {
+		const { containerEl } = this;
+		containerEl.empty();
 
-        // Add styles
-        this.addStyles();
+		// Add styles
+		this.addStyles();
 
-        // Set container to fill available space
-        containerEl.style.display = 'flex';
-        containerEl.style.flexDirection = 'column';
-        containerEl.style.height = '100%';
-        containerEl.style.overflow = 'hidden';
-        
-        // Create main container
-        this.videoContainerEl = containerEl.createDiv({ cls: "video-archive-container" });
-        
-        // Load and display videos
-        await this.loadVideos();
-    }
+		// Set container to fill available space
+		containerEl.style.display = 'flex';
+		containerEl.style.flexDirection = 'column';
+		containerEl.style.height = '100%';
+		containerEl.style.overflow = 'hidden';
 
-    private addStyles() {
-        const styleEl = document.createElement('style');
-        styleEl.textContent = `
+		// Create main container
+		this.videoContainerEl = containerEl.createDiv({ cls: "video-archive-container" });
+
+		// Create console container
+		this.consoleEl = containerEl.createDiv({ cls: "ffmpeg-console" });
+		this.consoleEl.style.display = 'none';
+
+		// Load and display videos
+		await this.loadVideos();
+	}
+
+	private addStyles() {
+		const styleEl = document.createElement('style');
+		styleEl.textContent = `
             .video-archive-container {
                 padding: 0;
                 display: grid;
@@ -64,6 +72,79 @@ export class VideoView extends MyItemView {
                 align-items: center;
                 overflow: hidden;
             }
+            .video-menu-button {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: rgba(0, 0, 0, 0.5);
+                color: white;
+                border-radius: 4px;
+                padding: 4px 8px;
+                cursor: pointer;
+                z-index: 10;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            .video-wrapper:hover .video-menu-button {
+                opacity: 1;
+            }
+            .ffmpeg-console {
+                background: var(--background-primary);
+                border-top: 1px solid var(--background-modifier-border);
+                padding: 16px;
+                display: flex;
+				flex-direction: column;
+                gap: 12px;
+                height: 240px;
+            }
+            .ffmpeg-input {
+				width: 70%;
+                display: flex;
+            }
+            .ffmpeg-input input {
+                padding: 8px 12px;
+                border-radius: 4px;
+                border: 1px solid var(--background-modifier-border);
+                font-size: 14px;
+            }
+            .ffmpeg-button-group {
+                display: flex;
+                flex-direction: row;
+            }
+            .ffmpeg-button-group button {
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: 500;
+                min-width: 80px;
+                transition: opacity 0.2s;
+            }
+            .ffmpeg-run {
+                background-color: var(--interactive-accent);
+                color: var(--text-on-accent);
+            }
+            .ffmpeg-run:hover {
+                opacity: 0.9;
+            }
+            .ffmpeg-close {
+                background-color: red;
+                color: white;
+            }
+            .ffmpeg-close:hover {
+                color: var(--text-on-accent);
+            }
+            .ffmpeg-output {
+                flex: 1;
+                overflow-y: auto;
+                font-family: monospace;
+                font-size: 12px;
+                padding: 12px;
+                background: var(--background-secondary);
+                border-radius: 4px;
+                white-space: pre-wrap;
+                line-height: 1.4;
+            }
             .video-item video {
                 width: 100%;
                 height: 100%;
@@ -85,78 +166,186 @@ export class VideoView extends MyItemView {
                 color: var(--text-muted);
             }
         `;
-        document.head.appendChild(styleEl);
-    }
+		document.head.appendChild(styleEl);
+	}
 
-    private async loadVideos() {
-        if (!this.videoContainerEl) return;
+	private async loadVideos() {
+		if (!this.videoContainerEl) return;
 
-        // Clear existing content
-        this.videoContainerEl.empty();
+		// Clear existing content
+		this.videoContainerEl.empty();
 
-        // Get all files in the target folder
-        const files = this.app.vault.getFiles()
-            .filter(file => {
-                const isInTargetFolder = file.path.startsWith(this.targetFolder);
-                const isVideo = file.extension.match(/^(mp4|webm|mov)$/i);
-                return isInTargetFolder && isVideo;
-            });
+		// Get all files in the target folder
+		const files = this.app.vault.getFiles()
+			.filter(file => {
+				const isInTargetFolder = file.path.startsWith(this.targetFolder);
+				const isVideo = file.extension.match(/^(mp4|webm|mov)$/i);
+				return isInTargetFolder && isVideo;
+			});
 
-        if (files.length === 0) {
-            this.videoContainerEl.createEl("p", {
-                text: "No videos found in " + this.targetFolder
-            });
-            return;
-        }
+		if (files.length === 0) {
+			this.videoContainerEl.createEl("p", {
+				text: "No videos found in " + this.targetFolder
+			});
+			return;
+		}
 
-        // Create video elements for each file
-        for (const file of files) {
-            await this.createVideoElement(file);
-        }
-    }
+		// Create video elements for each file
+		for (const file of files) {
+			await this.createVideoElement(file);
+		}
+	}
 
-    private async createVideoElement(file: TFile) {
-        if (!this.videoContainerEl) return;
+	private async createVideoElement(file: TFile) {
+		if (!this.videoContainerEl) return;
 
-        const itemEl = this.videoContainerEl.createDiv({ cls: "video-item" });
-        
-        // Create video wrapper
-        const videoWrapper = itemEl.createDiv({ cls: "video-wrapper" });
+		const itemEl = this.videoContainerEl.createDiv({ cls: "video-item" });
 
-        // Create video element
-        const videoEl = videoWrapper.createEl("video", {
-            attr: {
-                controls: "",
-                preload: "metadata",
-                loop: "true"
-            }
-        });
+		// Create video wrapper
+		const videoWrapper = itemEl.createDiv({ cls: "video-wrapper" });
 
-        // Get video URL
-        const videoUrl = this.app.vault.getResourcePath(file);
-        videoEl.src = videoUrl;
+		// Add menu button
+		const menuButton = videoWrapper.createDiv({ cls: "video-menu-button", text: "⋮" });
+		menuButton.addEventListener("click", (event) => {
+			const menu = new Menu();
+			menu.addItem((item) => {
+				item
+					.setTitle("Edit")
+					.setIcon("edit")
+					.onClick(() => this.showFfmpegConsole(file));
+			});
+			menu.addItem((item) => {
+				item
+					.setTitle("Score")
+					.setIcon("star")
+					.setDisabled(true);
+			});
+			menu.showAtMouseEvent(event);
+		});
+
+		// Create video element
+		const videoEl = videoWrapper.createEl("video", {
+			attr: {
+				controls: "",
+				preload: "metadata",
+				loop: "true"
+			}
+		});
+
+		// Get video URL
+		const videoUrl = this.app.vault.getResourcePath(file);
+		videoEl.src = videoUrl;
 
 
 
-        // Create info section
-        const infoEl = itemEl.createDiv({ cls: "video-info" });
-        infoEl.createDiv({ 
-            cls: "video-title",
-            text: file.basename
-        });
-        infoEl.createDiv({
-            cls: "video-meta",
-            text: `Last modified: ${new Date(file.stat.mtime).toLocaleDateString()}`
-        });
-    }
+		// Create info section
+		const infoEl = itemEl.createDiv({ cls: "video-info" });
+		infoEl.createDiv({
+			cls: "video-title",
+			text: file.basename
+		});
+		infoEl.createDiv({
+			cls: "video-meta",
+			text: `Last modified: ${new Date(file.stat.mtime).toLocaleDateString()}`
+		});
+	}
 
-    async onClose() {
-        // Remove custom styles
-        const styleEl = document.head.querySelector('style');
-        if (styleEl) {
-            styleEl.remove();
-        }
-        // Clear container
-        this.containerEl.empty();
-    }
+	private showFfmpegConsole(file: TFile) {
+		if (!this.consoleEl) return;
+
+		// Show console and store current video
+		this.consoleEl.style.display = 'flex';
+		this.currentVideoFile = file;
+		this.consoleEl.empty();
+
+		// Create input row
+		const inputArea = this.consoleEl.createDiv({ cls: 'ffmpeg-input' });
+		const input = inputArea.createEl('input', {
+			attr: {
+				type: 'text',
+				placeholder: 'Enter ffmpeg command (e.g., -vf "scale=1280:720")',
+			}
+		});
+
+		// Create button row
+		const buttonArea = this.consoleEl.createDiv({ cls: 'ffmpeg-button-group' });
+
+		const closeButton = buttonArea.createEl('button', {
+			cls: 'ffmpeg-close',
+			text: 'Close'
+		});
+		closeButton.addEventListener('click', () => {
+			if (this.consoleEl) {
+				this.consoleEl.style.display = 'none';
+				this.currentVideoFile = undefined;
+			}
+		});
+
+		const runButton = buttonArea.createEl('button', {
+			cls: 'ffmpeg-run',
+			text: 'Run'
+		});
+
+		// Create output area
+		const output = this.consoleEl.createDiv({ cls: 'ffmpeg-output' });
+		// Handle command execution
+		runButton.addEventListener('click', () => {
+			const command = input.value.trim();
+			if (!command) {
+				new Notice('Please enter a ffmpeg command');
+				return;
+			}
+
+			if (!this.currentVideoFile) {
+				new Notice('No video selected');
+				return;
+			}
+
+			// Get file paths
+			const inputPath = this.app.vault.adapter.getFullPath(this.currentVideoFile.path);
+			if (!inputPath) {
+				new Notice('Could not get video file path');
+				return;
+			}
+
+			// Validate command for safety
+			if (command.includes('&&') || command.includes(';') || command.includes('|')) {
+				new Notice('Command chaining is not allowed for security reasons');
+				return;
+			}
+
+			const outputPath = inputPath.replace(/\.[^.]+$/, '_output$&');
+
+			// Get ffmpeg path from settings
+			const ffmpegPath = this.plugin.settings.ffmpegPath;
+			if (!ffmpegPath) {
+				new Notice('FFmpeg path not configured. Please set it in plugin settings.');
+				return;
+			}
+
+			// Construct full command with overwrite flag
+			const fullCommand = `${ffmpegPath} -y -i "${inputPath}" ${command} "${outputPath}"`;
+
+			// Execute command
+			output.setText('Running ffmpeg command...');
+			exec(fullCommand, (error, stdout, stderr) => {
+				if (error) {
+					output.setText(`Error: ${error.message}\n${stderr}`);
+					return;
+				}
+				output.setText(`Command completed successfully!\n${stdout}\n${stderr}`);
+				new Notice('FFmpeg command completed');
+			});
+		});
+	}
+
+	async onClose() {
+		// Remove custom styles
+		const styleEl = document.head.querySelector('style');
+		if (styleEl) {
+			styleEl.remove();
+		}
+		// Clear container
+		this.containerEl.empty();
+	}
 }

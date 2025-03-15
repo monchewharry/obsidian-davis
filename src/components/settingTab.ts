@@ -25,6 +25,18 @@ export class DavisSettingTab extends PluginSettingTab {
 					new Notice('✅ Video archive path updated');
 				}));
 
+		new Setting(containerEl)
+			.setName('FFmpeg Path')
+			.setDesc('Full path to ffmpeg executable (e.g., /opt/homebrew/bin/ffmpeg)')
+			.addText(text => text
+				.setPlaceholder('Enter ffmpeg path...')
+				.setValue(this.plugin.settings.ffmpegPath)
+				.onChange(async (value) => {
+					this.plugin.settings.ffmpegPath = value;
+					await this.plugin.saveSettings();
+					new Notice('✅ FFmpeg path updated');
+				}));
+
 		containerEl.createEl('h4', { text: 'Hugo Blox Settings' });
 		new Setting(containerEl)
 			.setName('Hugo Posts Directory')
