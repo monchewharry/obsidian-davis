@@ -258,14 +258,118 @@ export class VideoView extends MyItemView {
 		this.currentVideoFile = file;
 		this.consoleEl.empty();
 
-		// Create input row
+		// Create input area with template selector
 		const inputArea = this.consoleEl.createDiv({ cls: 'ffmpeg-input' });
-		const input = inputArea.createEl('input', {
+
+		// Template selector
+		const templateArea = inputArea.createDiv({ cls: 'ffmpeg-template' });
+		templateArea.createSpan({ text: 'Template:' });
+		const templateSelect = templateArea.createEl('select');
+		const templates = [
+			{ name: 'Custom Command', value: 'custom' },
+			{ name: 'Trim Video', value: 'trim' },
+			{ name: 'Scale Video', value: 'scale' },
+			{ name: 'Extract Audio', value: 'audio' },
+			{ name: 'Change Format', value: 'format' },
+		];
+
+		templates.forEach(template => {
+			const option = templateSelect.createEl('option', {
+				value: template.value,
+				text: template.name
+			});
+		});
+
+		// Parameter inputs
+		const paramsArea = inputArea.createDiv({ cls: 'ffmpeg-params' });
+		const commandInput = inputArea.createEl('input', {
+			cls: 'ffmpeg-command',
 			attr: {
 				type: 'text',
-				placeholder: 'Enter ffmpeg command (e.g., -vf "scale=1280:720")',
+				placeholder: 'FFmpeg command will appear here...',
+				readonly: true
 			}
 		});
+
+		// Handle template changes
+		const updateCommand = () => {
+			const template = templateSelect.value;
+			paramsArea.empty();
+
+			switch (template) {
+				case 'trim': {
+					paramsArea.createSpan({ text: 'Start Time:' });
+					const startInput = paramsArea.createEl('input', {
+						attr: { type: 'text', placeholder: '00:00:00' }
+					});
+
+					paramsArea.createSpan({ text: 'End Time:' });
+					const endInput = paramsArea.createEl('input', {
+						attr: { type: 'text', placeholder: '00:01:00' }
+					});
+
+					const updateTrimCommand = () => {
+						commandInput.value = `-ss ${startInput.value} -to ${endInput.value} -c:v copy -c:a copy`;
+					};
+					startInput.addEventListener('input', updateTrimCommand);
+					endInput.addEventListener('input', updateTrimCommand);
+					break;
+				}
+				case 'scale': {
+					paramsArea.createSpan({ text: 'Width:' });
+					const widthInput = paramsArea.createEl('input', {
+						attr: { type: 'text', placeholder: '1280' }
+					});
+
+					paramsArea.createSpan({ text: 'Height:' });
+					const heightInput = paramsArea.createEl('input', {
+						attr: { type: 'text', placeholder: '720' }
+					});
+
+					const updateScaleCommand = () => {
+						commandInput.value = `-vf "scale=${widthInput.value || 'iw'}:${heightInput.value || 'ih'}"`;
+					};
+					widthInput.addEventListener('input', updateScaleCommand);
+					heightInput.addEventListener('input', updateScaleCommand);
+					break;
+				}
+				case 'audio': {
+					paramsArea.createSpan({ text: 'Format:' });
+					const formatSelect = paramsArea.createEl('select');
+					['mp3', 'aac', 'wav'].forEach(format => {
+						formatSelect.createEl('option', { value: format, text: format.toUpperCase() });
+					});
+
+					const updateAudioCommand = () => {
+						commandInput.value = `-vn -acodec ${formatSelect.value}`;
+					};
+					formatSelect.addEventListener('change', updateAudioCommand);
+					updateAudioCommand();
+					break;
+				}
+				case 'format': {
+					paramsArea.createSpan({ text: 'Format:' });
+					const formatSelect = paramsArea.createEl('select');
+					['mp4', 'webm', 'mov', 'gif'].forEach(format => {
+						formatSelect.createEl('option', { value: format, text: format.toUpperCase() });
+					});
+
+					const updateFormatCommand = () => {
+						commandInput.value = `-c:v copy -c:a copy`;
+					};
+					formatSelect.addEventListener('change', updateFormatCommand);
+					updateFormatCommand();
+					break;
+				}
+				default: {
+					commandInput.removeAttribute('readonly');
+					commandInput.placeholder = 'Enter custom ffmpeg command (e.g., -vf "scale=1280:720")';
+				}
+			}
+		};
+
+		templateSelect.addEventListener('change', updateCommand);
+		updateCommand(); // Initialize with default template
 
 		// Create button row
 		const buttonArea = this.consoleEl.createDiv({ cls: 'ffmpeg-button-group' });
@@ -290,7 +394,7 @@ export class VideoView extends MyItemView {
 		const output = this.consoleEl.createDiv({ cls: 'ffmpeg-output' });
 		// Handle command execution
 		runButton.addEventListener('click', () => {
-			const command = input.value.trim();
+			const command = commandInput.value.trim();
 			if (!command) {
 				new Notice('Please enter a ffmpeg command');
 				return;
@@ -314,7 +418,22 @@ export class VideoView extends MyItemView {
 				return;
 			}
 
-			const outputPath = inputPath.replace(/\.[^.]+$/, '_output$&');
+			// Handle output path based on template
+			const template = templateSelect.value;
+			let outputPath = inputPath;
+
+			if (template === 'audio') {
+				// For audio extraction, change extension based on format
+				const format = paramsArea.querySelector('select')?.value || 'mp3';
+				outputPath = inputPath.replace(/\.[^.]+$/, `_audio.${format}`);
+			} else if (template === 'format') {
+				// For format conversion, change extension to target format
+				const format = paramsArea.querySelector('select')?.value || 'mp4';
+				outputPath = inputPath.replace(/\.[^.]+$/, `.${format}`);
+			} else {
+				// For other operations, append _output to the filename
+				outputPath = inputPath.replace(/\.[^.]+$/, '_output$&');
+			}
 
 			// Get ffmpeg path from settings
 			const ffmpegPath = this.plugin.settings.ffmpegPath;
