@@ -10,7 +10,9 @@ export enum CustomViewTypes {
 	/** Console and debugging view */
 	CONSOLE_VIEW_TYPE = "console-view",
 	/** Youtube Transcript view */
-	TRANSCRIPT_TYPE_VIEW = "ytTranscript-view"
+	TRANSCRIPT_TYPE_VIEW = "ytTranscript-view",
+	/** Video archive view */
+	VIDEO_VIEW_TYPE = "video-archive-view"
 }
 
 /**

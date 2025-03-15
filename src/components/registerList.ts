@@ -4,6 +4,7 @@ import {
 	NoteInfoView,
 	ResumeView,
 	TranscriptView,
+	VideoView,
 } from "@/components/Views";
 import {
 	formatNote,
@@ -43,6 +44,13 @@ interface RibbonList {
 
 export const ribbonList = (app: App): RibbonList[] => {
 	return [
+		{
+			icon: "video",
+			title: "Open Video Archive",
+			callback: async () => {
+				await activateSideBarView(app, CustomViewTypes.VIDEO_VIEW_TYPE);
+			},
+		},
 		{
 			icon: "arrow-up-from-line",
 			title: "Commit and Sync",
@@ -113,6 +121,10 @@ interface ViewList {
 	viewCreator: ViewCreator;
 }
 export const viewList = (plugin: MyPlugin): ViewList[] => [
+	{
+		type: CustomViewTypes.VIDEO_VIEW_TYPE,
+		viewCreator: (leaf) => new VideoView(leaf),
+	},
 	{
 		type: CustomViewTypes.TRANSCRIPT_TYPE_VIEW,
 		viewCreator: (leaf) => new TranscriptView(leaf, plugin),
