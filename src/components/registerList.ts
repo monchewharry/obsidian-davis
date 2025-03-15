@@ -123,7 +123,7 @@ interface ViewList {
 export const viewList = (plugin: MyPlugin): ViewList[] => [
 	{
 		type: CustomViewTypes.VIDEO_VIEW_TYPE,
-		viewCreator: (leaf) => new VideoView(leaf),
+		viewCreator: (leaf) => new VideoView(leaf, plugin),
 	},
 	{
 		type: CustomViewTypes.TRANSCRIPT_TYPE_VIEW,

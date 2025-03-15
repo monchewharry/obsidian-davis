@@ -20,7 +20,11 @@ interface YTranscriptSettings {
 	leafUrls: string[];
 }
 
-export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings, YTranscriptSettings {
+interface VideoArchiveSettings {
+	videoArchivePath: string;
+}
+
+export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings, YTranscriptSettings, VideoArchiveSettings {
 
 };
 
@@ -38,4 +42,5 @@ export const DEFAULT_SETTINGS: DavisSettings = {
 	lang: "en",
 	country: "EN",
 	leafUrls: [],
+	videoArchivePath: 'private/twitter/video-archive',
 };

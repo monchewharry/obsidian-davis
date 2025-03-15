@@ -12,6 +12,19 @@ export class DavisSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 		containerEl.addClass('my-setting-tab');
+		containerEl.createEl('h4', { text: 'Video Archive Settings' });
+		new Setting(containerEl)
+			.setName('Video Archive Directory')
+			.setDesc('Path to your video archive directory within the vault')
+			.addText(text => text
+				.setPlaceholder('Enter path...')
+				.setValue(this.plugin.settings.videoArchivePath)
+				.onChange(async (value) => {
+					this.plugin.settings.videoArchivePath = value;
+					await this.plugin.saveSettings();
+					new Notice('✅ Video archive path updated');
+				}));
+
 		containerEl.createEl('h4', { text: 'Hugo Blox Settings' });
 		new Setting(containerEl)
 			.setName('Hugo Posts Directory')

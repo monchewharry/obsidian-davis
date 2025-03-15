@@ -1,13 +1,19 @@
 import { CustomViewTypes } from "@/types/viewType";
 import { MyItemView } from "@/lib/myItemView";
 import { TFile, WorkspaceLeaf } from "obsidian";
+import MyPlugin from "@/main";
 
 export class VideoView extends MyItemView {
     private videoContainerEl?: HTMLElement;
-    private readonly targetFolder = "private/twitter/video-archive";
+    private plugin: MyPlugin;
 
-    constructor(leaf: WorkspaceLeaf) {
+    get targetFolder(): string {
+        return this.plugin.settings.videoArchivePath;
+    }
+
+    constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
         super(leaf, CustomViewTypes.VIDEO_VIEW_TYPE, "video", "Video Archive");
+        this.plugin = plugin;
     }
 
     async onOpen() {
