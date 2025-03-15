@@ -28,11 +28,11 @@ import {
 	Plugin,
 } from "obsidian";
 import { DavisSettings } from "@/lib/config/settings";
-import { HugoFrontmatter, MarkdownRule, publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
-import RegexFindReplaceModal from "./Modals/regexFindReplaceModel";
+import { publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
 import MyPlugin from "@/main";
 import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
 import { YtPromptModal } from "./Modals/ytPromptModal";
+import { runOtherPluginCommand } from "@/lib/utils/pluginApi";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -43,6 +43,13 @@ interface RibbonList {
 
 export const ribbonList = (app: App): RibbonList[] => {
 	return [
+		{
+			icon: "github",
+			title: "Commit and Sync",
+			callback: async () => {
+				runOtherPluginCommand(app, "obsidian-git", "push");
+			},
+		},
 		{
 			icon: "locate-fixed",
 			title: "test dev functions",
@@ -152,8 +159,15 @@ export const eventRefList = (app: App): EventRef[] => {
 	];
 };
 
-export const commandList = (app: App, settings: DavisSettings, plugin: Plugin): Command[] => {
+export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin): Command[] => {
 	return [
+		{
+			id: "my-commit-and-sync",
+			name: "Commit and Sync (obsidian-git)",
+			callback: async () => {
+				runOtherPluginCommand(app, "obsidian-git", "push");
+			}
+		},
 		{
 			id: "transcript-from-prompt",
 			name: "Get YouTube transcript from url prompt",

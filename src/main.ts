@@ -23,11 +23,9 @@ export default class MyPlugin extends Plugin {
 		await this.loadSettings();
 
 		// Then check for dependencies
-		if (!isPluginEnabled(this.app, "dataview")) {
-			new Notice("❌ This plugin requires obsidian-dataview to be enabled");
-			return;
-		}
-
+		["dataview", "obsidian-git"].forEach((pluginId) => {
+			isPluginEnabled(this.app, pluginId);
+		});
 		this.dataviewAPI = getAPI(this.app);
 		if (!this.dataviewAPI) {
 			new Notice("❌ Could not initialize Dataview API");

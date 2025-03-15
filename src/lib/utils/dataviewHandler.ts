@@ -7,11 +7,11 @@ import { getAPI, DataArray, Link, DataviewPage } from "obsidian-dataview";
 export function testDV(app: App) {
 
 	// Now TypeScript knows about the pages method and its return type
-	// let result = dvPagePaths(app, '"ob-RAG"');
+	let result = dvPagePaths(app, '"ob-RAG"');
 	// let result = dvPages(app, '"ob-RAG"');
 	// let result = dvPages(app, "#diary");
 	// let result = dvPagePaths(app, "#diary");
-	let result = dvPage(app, "Diary/each-diary-file/2024-11-09.md");
+	// let result = dvPage(app, "Diary/each-diary-file/2024-11-09.md");
 	console.log(result);
 }
 
