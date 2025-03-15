@@ -1,10 +1,11 @@
 import { MyItemView } from "@/lib/myItemView";
 import { CustomViewTypes } from "@/types/viewType";
-import { WorkspaceLeaf, Menu } from "obsidian";
+import { WorkspaceLeaf, Menu, Notice, TFile } from "obsidian";
 import MyPlugin from "@/main";
 import { TranscriptBlock, TranscriptResponse } from "@/types/ytTranscrpt";
 import { formatTimestamp, getTranscriptBlocks, highlightText, YoutubeTranscript, YoutubeTranscriptError } from "@/lib/utils/ytTranscript";
 export class TranscriptView extends MyItemView {
+	private url: string;
 	isDataLoaded: boolean;
 	plugin: MyPlugin;
 
@@ -21,10 +22,118 @@ export class TranscriptView extends MyItemView {
 		this.isDataLoaded = false;
 	}
 
+	private formatTranscriptForExport(data: TranscriptResponse): string {
+		// Join all lines with proper spacing and formatting
+		return data.lines
+			.map(line => line.text.trim())
+			.join(' ')
+			// Remove multiple spaces
+			.replace(/\s+/g, ' ')
+			// Add paragraph breaks at natural sentence endings
+			.replace(/([.!?])\s/g, '$1\n\n')
+			.trim();
+	}
+
+	private async exportToNewFile() {
+		if (!this.videoData || !this.videoData.length) {
+			new Notice('No transcript data available to export.');
+			return;
+		}
+
+		const data = this.videoData[0]; // Get the first transcript
+		const formattedText = this.formatTranscriptForExport(data);
+
+		// Create a sanitized filename from the video title
+		const sanitizedTitle = (this.videoTitle || 'YouTube Transcript')
+			.replace(/[^a-zA-Z0-9]/g, ' ') // Replace non-alphanumeric chars with space
+			.replace(/\s+/g, ' ')        // Replace multiple spaces with single space
+			.trim()
+			.replace(/\s/g, '-')        // Replace spaces with hyphens
+			.toLowerCase();
+
+		// Create the file content with YAML frontmatter
+		const timestamp = new Date().toISOString().split('T')[0];
+		const exportContent = [
+			'---',
+			'ytURL: ' + this.url,
+			'title: ' + (this.videoTitle || 'YouTube Transcript'),
+			'date: ' + timestamp,
+			'type: youtube-transcript',
+			'---',
+			'',
+			`![](${this.url})`,
+			formattedText,
+		].join('\n');
+
+		try {
+			// Create unique filename
+			let filename = `${sanitizedTitle}.md`;
+			let number = 1;
+
+			// Check if file exists and increment number until we find a unique name
+			while (await this.app.vault.adapter.exists(filename)) {
+				filename = `${sanitizedTitle}-${number}.md`;
+				number++;
+			}
+
+			// Create the file in the vault root
+			await this.app.vault.create(filename, exportContent);
+
+			// Open the newly created file
+			const file = this.app.vault.getAbstractFileByPath(filename);
+			if (file instanceof TFile) {
+				await this.app.workspace.getLeaf().openFile(file);
+			}
+
+			new Notice(`Transcript exported to ${filename}`);
+		} catch (error) {
+			console.error('Failed to export transcript:', error);
+			new Notice('Failed to export transcript. Check console for details.');
+		}
+	}
+
 	async onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.createEl("h4", { text: "Transcript" });
+
+		// Create header container
+		const headerContainer = contentEl.createEl('div', { cls: 'transcript-header' });
+
+		// Add title and export button in the same row
+		const titleRow = headerContainer.createEl('div', { cls: 'transcript-title-row' });
+		titleRow.createEl('h4', { text: 'Transcript', cls: 'transcript-title' });
+
+		const exportButton = titleRow.createEl('button', {
+			text: 'Export to Note',
+			cls: 'transcript-export-button'
+		});
+		exportButton.addEventListener('click', () => this.exportToNewFile());
+
+		// Add styles
+		const style = document.createElement('style');
+		style.textContent = `
+			.transcript-header { margin-bottom: 20px; }
+			.transcript-title-row { 
+				display: flex; 
+				justify-content: space-between; 
+				align-items: center;
+				margin-bottom: 10px;
+			}
+			.transcript-title { margin: 0; }
+			.transcript-export-button {
+				padding: 4px 8px;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+			.yt-transcript__transcript-block {
+				margin-bottom: 16px;
+				line-height: 1.5;
+			}
+			.yt-transcript__transcript-block span {
+				margin-left: 8px;
+			}
+		`;
+		document.head.appendChild(style);
 	}
 
 	async onClose() {
@@ -217,6 +326,7 @@ export class TranscriptView extends MyItemView {
 			return;
 		}
 		const urlState = state as { url: string };
+		this.url = urlState.url;
 		//If we switch to another view and then switch back, we don't want to reload the data
 		if (this.isDataLoaded) return;
 
@@ -254,6 +364,10 @@ export class TranscriptView extends MyItemView {
 
 			this.isDataLoaded = true;
 			this.loaderContainerEl.empty();
+
+			// Store the data for export functionality
+			this.videoData = [data];
+			this.videoTitle = data.title;
 
 			this.renderVideoTitle(data.title);
 			this.renderSearchInput(url, data, timestampMod);

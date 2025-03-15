@@ -163,7 +163,7 @@ export const commandList = (app: App, settings: DavisSettings, plugin: Plugin): 
 					prompt.openAndGetValue(resolve, () => { }),
 				);
 				if (url) {
-					openYtTranscriptView(url);
+					openYtTranscriptView(app, url);
 				}
 			}
 		},

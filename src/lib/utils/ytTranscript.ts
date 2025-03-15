@@ -1,6 +1,6 @@
 import { TranscriptLine, TranscriptBlock } from "@/types/ytTranscrpt";
 import { parse } from "node-html-parser";
-
+import { request, requestUrl } from "obsidian";
 export const formatTimestamp = (t: number): string => {
 	if (t < 0) return "00:00";
 	const fnum = (n: number): string => `${n | 0}`.padStart(2, "0");
@@ -72,6 +72,11 @@ const YOUTUBE_TITLE_REGEX = new RegExp(
 );
 export class YoutubeTranscriptError extends Error {
 	constructor(err: unknown) {
+		if (err === 'NO_TRANSCRIPT') {
+			super('This video does not have any available transcripts');
+			return;
+		}
+
 		if (!(err instanceof Error)) {
 			super("");
 			return;
@@ -88,6 +93,7 @@ export interface TranscriptConfig {
 	lang?: string;
 	country?: string;
 }
+
 export class YoutubeTranscript {
 	public static async fetchTranscript(
 		url: string,
@@ -117,6 +123,11 @@ export class YoutubeTranscript {
 			const availableCaptions =
 				data?.captions?.playerCaptionsTracklistRenderer
 					?.captionTracks || [];
+
+			if (!availableCaptions.length) {
+				throw new YoutubeTranscriptError('NO_TRANSCRIPT');
+			}
+
 			// If languageCode was specified then search for it's code, otherwise get the first.
 			let captionTrack = availableCaptions?.[0];
 			if (langCode)
