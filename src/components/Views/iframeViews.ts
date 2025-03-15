@@ -1,4 +1,4 @@
-import { CustomViewTypes } from "@/types/definitions";
+import { CustomViewTypes } from "@/types/viewType";
 import { WorkspaceLeaf } from "obsidian";
 import { MyItemView } from "@/lib/myItemView";
 

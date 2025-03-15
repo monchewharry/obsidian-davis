@@ -12,7 +12,7 @@ import {
 	regexCommand,
 } from "@/lib/Commands";
 import { onOpenHandler } from "@/lib/Events";
-import { CustomViewTypes } from "@/types/definitions";
+import { CustomViewTypes } from "@/types/viewType";
 import { activateSideBarView, setStatusBarText, testDV } from "@/lib/utils";
 import {
 	App,

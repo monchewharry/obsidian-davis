@@ -1,4 +1,4 @@
-import { BuiltInLeafTypes } from "@/types/definitions";
+import { BuiltInLeafTypes } from "@/types/viewType";
 import { App, TFile, TFolder, Workspace } from "obsidian";
 /**
  * set and activate view in right side bar by type

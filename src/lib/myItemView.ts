@@ -1,4 +1,4 @@
-import { CustomViewTypes } from "@/types/definitions";
+import { CustomViewTypes } from "@/types/viewType";
 import { IconName, ItemView, WorkspaceLeaf } from "obsidian";
 /**
  * A view that renders an iframe

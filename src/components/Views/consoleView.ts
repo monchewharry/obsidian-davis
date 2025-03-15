@@ -1,4 +1,4 @@
-import { BuiltInLeafTypes, CustomViewTypes } from "@/types/definitions";
+import { BuiltInLeafTypes, CustomViewTypes } from "@/types/viewType";
 import {
 	findRelatedNotes,
 	getDataOfLeaf,
@@ -6,7 +6,7 @@ import {
 } from "@/lib/utils";
 import { App, Editor, MarkdownView, View, WorkspaceLeaf, debounce } from "obsidian";
 import { MyItemView } from "@/lib/myItemView";
-import { LeafStatDisplay } from "./LeafStatDisplay";
+import { LeafStatDisplay } from "@/lib/LeafStatDisplay";
 
 
 export class NoteInfoView extends MyItemView {

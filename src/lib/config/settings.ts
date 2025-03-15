@@ -1,6 +1,6 @@
 interface hugoBloxSettings {
 	hugobloxPostsPath: string;
-	hugobloxPostHeaders?: any;
+	// hugobloxPostHeaders?: any;
 };
 
 interface RfrPluginSettings {
@@ -13,8 +13,14 @@ interface RfrPluginSettings {
 	processTab: boolean;
 	prefillFind: boolean;
 };
+interface YTranscriptSettings {
+	timestampMod: number;
+	lang: string;
+	country: string;
+	leafUrls: string[];
+}
 
-export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings {
+export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings, YTranscriptSettings {
 
 };
 
@@ -27,5 +33,9 @@ export const DEFAULT_SETTINGS: DavisSettings = {
 	processLineBreak: false,
 	processTab: false,
 	prefillFind: false,
-	hugobloxPostsPath: '/Users/dingxiancao/monchewharry.github.io/content/blogs/draft'
+	hugobloxPostsPath: '/Users/dingxiancao/monchewharry.github.io/content/blogs/draft',
+	timestampMod: 5,
+	lang: "en",
+	country: "EN",
+	leafUrls: [],
 };
