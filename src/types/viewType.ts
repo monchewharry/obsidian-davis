@@ -9,6 +9,8 @@ export enum CustomViewTypes {
 	RESUME_VIEW_TYPE = "resume-preview",
 	/** Console and debugging view */
 	CONSOLE_VIEW_TYPE = "console-view",
+	/** Youtube Transcript view */
+	TRANSCRIPT_TYPE_VIEW = "ytTranscript-view"
 }
 
 /**

@@ -3,6 +3,7 @@ import {
 	IztroView,
 	NoteInfoView,
 	ResumeView,
+	TranscriptView,
 } from "@/components/Views";
 import {
 	formatNote,
@@ -29,6 +30,9 @@ import {
 import { DavisSettings } from "@/lib/config/settings";
 import { HugoFrontmatter, MarkdownRule, publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
 import RegexFindReplaceModal from "./Modals/regexFindReplaceModel";
+import MyPlugin from "@/main";
+import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
+import { YtPromptModal } from "./Modals/ytPromptModal";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -101,7 +105,11 @@ interface ViewList {
 	type: string;
 	viewCreator: ViewCreator;
 }
-export const viewList: ViewList[] = [
+export const viewList = (plugin: MyPlugin): ViewList[] => [
+	{
+		type: CustomViewTypes.TRANSCRIPT_TYPE_VIEW,
+		viewCreator: (leaf) => new TranscriptView(leaf, plugin),
+	},
 	{
 		type: CustomViewTypes.IZTRO_VIEW_TYPE,
 		viewCreator: (leaf) => new IztroView(leaf),
@@ -146,6 +154,19 @@ export const eventRefList = (app: App): EventRef[] => {
 
 export const commandList = (app: App, settings: DavisSettings, plugin: Plugin): Command[] => {
 	return [
+		{
+			id: "transcript-from-prompt",
+			name: "Get YouTube transcript from url prompt",
+			callback: async () => {
+				const prompt = new YtPromptModal(app);
+				const url: string = await new Promise((resolve) =>
+					prompt.openAndGetValue(resolve, () => { }),
+				);
+				if (url) {
+					openYtTranscriptView(url);
+				}
+			}
+		},
 		{
 			id: 'my-regex-replace',
 			name: 'Find and Replace using regular expressions',

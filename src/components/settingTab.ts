@@ -11,6 +11,7 @@ export class DavisSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
+		containerEl.addClass('my-setting-tab');
 		containerEl.createEl('h4', { text: 'Hugo Blox Settings' });
 		new Setting(containerEl)
 			.setName('Hugo Posts Directory')
@@ -52,5 +53,49 @@ export class DavisSettingTab extends PluginSettingTab {
 					this.plugin.settings.prefillFind = value;
 					await this.plugin.saveSettings();
 				}));
+
+
+		containerEl.createEl("h4", { text: "Settings for Youtube Transcript" });
+
+		new Setting(containerEl)
+			.setName("Timestamp interval")
+			.setDesc(
+				"Indicates how often timestamp should occur in text (1 - every line, 10 - every 10 lines)",
+			)
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.timestampMod.toFixed())
+					.onChange(async (value) => {
+						const v = Number.parseInt(value);
+						this.plugin.settings.timestampMod = Number.isNaN(v)
+							? 5
+							: v;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName("Language")
+			.setDesc("Preferred transcript language")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.lang)
+					.onChange(async (value) => {
+						this.plugin.settings.lang = value;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName("Country")
+			.setDesc("Preferred transcript country code")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.country)
+					.onChange(async (value) => {
+						this.plugin.settings.country = value;
+						await this.plugin.saveSettings();
+					}),
+			);
 	}
 }

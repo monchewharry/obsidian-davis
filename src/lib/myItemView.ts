@@ -6,7 +6,7 @@ import { IconName, ItemView, WorkspaceLeaf } from "obsidian";
  * @param iframeSource
  * @param viewtype
  */
-export class MyItemView extends ItemView {
+export abstract class MyItemView extends ItemView {
 	private viewtype: string;
 	private displayText: string;
 	icon: string;
