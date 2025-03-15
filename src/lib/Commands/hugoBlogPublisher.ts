@@ -1,6 +1,6 @@
 import { DavisSettings } from "@/lib/config/settings";
 import { App, MarkdownFileInfo, MarkdownView, Notice } from "obsidian";
-import { HugoMarkdownConfig, hugoHeaderConfig } from "@/lib/config/configParser";
+import { HugoMarkdownConfig } from "@/lib/config/configParser";
 import { parse, stringify } from 'yaml';
 import path from "path";
 import fs from 'fs/promises';
@@ -33,7 +33,6 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 	}
 
 	try {
-		const templateYaml = await hugoHeaderConfig(app);
 
 		// Read current file content
 		const fileContent = await app.vault.read(currentFile);
@@ -48,14 +47,13 @@ export async function publishHugoBlog(view: MarkdownView | MarkdownFileInfo, app
 
 		// Configure new frontmatter
 		const newFrontmatter = {
-			...templateYaml,
 			draft: true,
 			authors: ['admin'],
 			title: currentFile.basename,
 			date: new Date(currentFile.stat.mtime).toISOString().split('T')[0],
 			summary: existingFrontmatter.summary || "Brief description of the note.",
-			categories: existingFrontmatter.categories || templateYaml.categories,
-			tags: existingFrontmatter.tags || templateYaml.tags
+			categories: existingFrontmatter.categories || [],
+			tags: existingFrontmatter.tags || []
 		};
 
 		// Create new content with updated frontmatter

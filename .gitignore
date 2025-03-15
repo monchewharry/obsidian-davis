@@ -1,7 +1,5 @@
 # vscode
 .vscode 
-main.css
-styles.css
 test-vault-myplugin/*
 
 # Intellij
@@ -11,10 +9,11 @@ test-vault-myplugin/*
 # npm
 node_modules
 
-# Don't include the compiled main.js file in the repo.
+# Don't include the compiled main.js, main.css,style.css file in the repo.
 # They should be uploaded to GitHub releases instead.
 main.js
-
+main.css
+styles.css
 # Exclude sourcemaps
 *.map
 
