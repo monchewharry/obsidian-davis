@@ -1,15 +1,17 @@
 # Obsidian My Plugin 
-> open test-vault-myplugin as obsidian vault to test.
 
-- note formatter
+
+
+## features
+
 - metadata management
-- iframe view
-- react component
-
-## Purpose
-
-- knowledge management
-- multimodal AI assistant
+- note formatting
+- pipeline for external plugins: dataview/obsidian-git 
+- youtube transcripts
+- HUGO blox pipeline
+- webviewer ribbons
+- YAML resume preview
+- custom views: iframe, console, resume
 
 
 ## Dev Note

@@ -44,7 +44,7 @@ interface RibbonList {
 export const ribbonList = (app: App): RibbonList[] => {
 	return [
 		{
-			icon: "github",
+			icon: "arrow-up-from-line",
 			title: "Commit and Sync",
 			callback: async () => {
 				runOtherPluginCommand(app, "obsidian-git", "push");
