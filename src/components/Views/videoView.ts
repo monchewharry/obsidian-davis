@@ -447,13 +447,19 @@ export class VideoView extends MyItemView {
 
 			// Execute command
 			output.setText('Running ffmpeg command...');
-			exec(fullCommand, (error, stdout, stderr) => {
+			exec(fullCommand, async (error, stdout, stderr) => {
 				if (error) {
 					output.setText(`Error: ${error.message}\n${stderr}`);
 					return;
 				}
 				output.setText(`Command completed successfully!\n${stdout}\n${stderr}`);
 				new Notice('FFmpeg command completed');
+
+				// Give the file system a moment to finish writing
+				await new Promise(resolve => setTimeout(resolve, 1000));
+				
+				// Refresh the video list
+				await this.loadVideos();
 			});
 		});
 	}
