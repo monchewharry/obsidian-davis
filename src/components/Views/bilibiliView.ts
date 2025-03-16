@@ -11,7 +11,7 @@ export class BilibiliView extends MyItemView {
 	private cinemaContainer?: HTMLElement;
 
 	constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
-		super(leaf, CustomViewTypes.BILIBILI_VIEW_TYPE, "bilibili", "Bilibili Videos");
+		super(leaf, CustomViewTypes.BILIBILI_VIEW_TYPE, "play-circle", "Bilibili Videos");
 		this.plugin = plugin;
 	}
 
