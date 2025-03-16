@@ -41,22 +41,39 @@ export class YoutubeShortView extends MyItemView {
                 height: 100%;
                 overflow-y: auto;
                 background: var(--background-primary);
+                display: flex;
+                flex-direction: column;
+                gap: 48px;
             }
             .youtube-shorts-category {
-                margin-bottom: 32px;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
             }
             .youtube-shorts-category-title {
-                font-size: 20px;
+                font-size: 24px;
                 font-weight: 600;
                 color: var(--text-normal);
-                margin-bottom: 16px;
                 padding-bottom: 8px;
                 border-bottom: 2px solid var(--background-modifier-border);
             }
             .youtube-shorts-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+                display: flex;
+                flex-direction: row;
                 gap: 16px;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+            .youtube-shorts-grid::-webkit-scrollbar {
+                height: 8px;
+            }
+            .youtube-shorts-grid::-webkit-scrollbar-track {
+                background: var(--background-modifier-border);
+                border-radius: 4px;
+            }
+            .youtube-shorts-grid::-webkit-scrollbar-thumb {
+                background: var(--text-muted);
+                border-radius: 4px;
             }
             .youtube-short-item {
                 background: var(--background-secondary);
@@ -64,8 +81,10 @@ export class YoutubeShortView extends MyItemView {
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
-                height: calc(100vh - 100px);
+                height: calc(100vh - 200px);
+                min-width: 340px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                flex-shrink: 0;
             }
             .youtube-short-wrapper {
                 position: relative;
