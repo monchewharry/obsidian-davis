@@ -14,7 +14,9 @@ export enum CustomViewTypes {
 	/** Video archive view */
 	VIDEO_VIEW_TYPE = "video-archive-view",
 	/** YouTube Shorts view */
-	YOUTUBE_SHORT_VIEW_TYPE = "youtube-shorts-view"
+	YOUTUBE_SHORT_VIEW_TYPE = "youtube-shorts-view",
+	/** Bilibili video view */
+	BILIBILI_VIEW_TYPE = "bilibili-view"
 }
 
 /**

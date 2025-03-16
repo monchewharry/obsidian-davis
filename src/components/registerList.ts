@@ -6,6 +6,7 @@ import {
 	TranscriptView,
 	VideoView,
 	YoutubeShortView,
+	BilibiliView,
 } from "@/components/Views";
 import {
 	formatNote,
@@ -45,6 +46,13 @@ interface RibbonList {
 
 export const ribbonList = (app: App): RibbonList[] => {
 	return [
+		{
+			icon: "play-circle",
+			title: "Open Bilibili Videos",
+			callback: async () => {
+				await activateSideBarView(app, CustomViewTypes.BILIBILI_VIEW_TYPE);
+			},
+		},
 		{
 			icon: "youtube",
 			title: "Open YouTube Shorts",
@@ -130,6 +138,10 @@ interface ViewList {
 }
 export const viewList = (plugin: MyPlugin): ViewList[] => [
 	{
+		type: CustomViewTypes.BILIBILI_VIEW_TYPE,
+		viewCreator: (leaf) => new BilibiliView(leaf, plugin),
+	},
+	{
 		type: CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE,
 		viewCreator: (leaf) => new YoutubeShortView(leaf, plugin),
 	},
@@ -158,7 +170,7 @@ export const viewList = (plugin: MyPlugin): ViewList[] => [
 		viewCreator: (leaf) =>
 			new IframeView(
 				leaf,
-				"https://nextjs-chat-ruby-sigma-91.vercel.app",
+				"https://player.bilibili.com/player.html?isOutside=true&aid=1256358045&bvid=BV1KE4m1d7C4&cid=1639341950&p=1",//"https://nextjs-chat-ruby-sigma-91.vercel.app",
 				CustomViewTypes.IframeViewTypes.CHATBOT_VIEW_TYPE,
 				"Chatbot"
 			),
@@ -185,6 +197,13 @@ export const eventRefList = (app: App): EventRef[] => {
 
 export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin): Command[] => {
 	return [
+		{
+			id: "open-bilibili-videos",
+			name: "Open Bilibili Videos",
+			callback: async () => {
+				await activateSideBarView(app, CustomViewTypes.BILIBILI_VIEW_TYPE);
+			}
+		},
 		{
 			id: "open-youtube-shorts",
 			name: "Open YouTube Shorts",
