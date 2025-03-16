@@ -37,6 +37,18 @@ export class DavisSettingTab extends PluginSettingTab {
 					new Notice('✅ FFmpeg path updated');
 				}));
 
+		new Setting(containerEl)
+			.setName('YouTube Shorts File')
+			.setDesc('Path to your YouTube Shorts markdown file within the vault')
+			.addText(text => text
+				.setPlaceholder('Enter path...')
+				.setValue(this.plugin.settings.youtubeShortsPath)
+				.onChange(async (value) => {
+					this.plugin.settings.youtubeShortsPath = value;
+					await this.plugin.saveSettings();
+					new Notice('✅ YouTube Shorts file path updated');
+				}));
+
 		containerEl.createEl('h4', { text: 'Hugo Blox Settings' });
 		new Setting(containerEl)
 			.setName('Hugo Posts Directory')

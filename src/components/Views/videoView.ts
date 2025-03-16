@@ -9,6 +9,9 @@ export class VideoView extends MyItemView {
 	private consoleEl?: HTMLElement;
 	private currentVideoFile?: TFile;
 	private plugin: MyPlugin;
+	private selectedVideos: Set<string> = new Set();
+	private isInCinemaMode: boolean = false;
+	private cinemaContainer?: HTMLElement;
 
 	get targetFolder(): string {
 		return this.plugin.settings.videoArchivePath;
@@ -47,6 +50,7 @@ export class VideoView extends MyItemView {
 		const styleEl = document.createElement('style');
 		styleEl.textContent = `
             .video-archive-container {
+                position: relative;
                 padding: 0;
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -70,6 +74,79 @@ export class VideoView extends MyItemView {
                 justify-content: center;
                 align-items: center;
                 overflow: hidden;
+            }
+            .video-checkbox-container {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                z-index: 10;
+                background-color: var(--background-primary);
+                padding: 6px;
+                border-radius: 4px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0.9;
+            }
+            .video-wrapper:hover .video-checkbox-container {
+                opacity: 1;
+            }
+            .video-checkbox {
+                transform: scale(1.5);
+                cursor: pointer;
+                margin: 0;
+                accent-color: var(--interactive-accent);
+            }
+            .cinema-mode-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: black;
+                z-index: 1000;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(45vw, 1fr));
+                gap: 10px;
+                padding: 10px;
+                overflow: hidden;
+                width: 100vw;
+                height: 100vh;
+            }
+            .cinema-mode-video-wrapper {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+            .cinema-mode-video {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                max-height: calc(100vh - 100px);
+            }
+            .cinema-mode-controls {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px 20px;
+                border-radius: 5px;
+                display: flex;
+                gap: 10px;
+                z-index: 1001;
+            }
+            .cinema-mode-button {
+                background: var(--interactive-accent);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
             }
             .video-menu-button {
                 position: absolute;
@@ -187,6 +264,9 @@ export class VideoView extends MyItemView {
 		// Clear existing content
 		this.videoContainerEl.empty();
 
+		// Exit cinema mode if active
+		this.exitCinemaMode();
+
 		// Get all files in the target folder
 		const files = this.app.vault.getFiles()
 			.filter(file => {
@@ -202,6 +282,13 @@ export class VideoView extends MyItemView {
 			return;
 		}
 
+		// Add cinema mode button
+		const cinemaButton = this.videoContainerEl.createEl('button', {
+			cls: 'cinema-mode-button',
+			text: 'Enter Cinema Mode'
+		});
+		cinemaButton.addEventListener('click', () => this.enterCinemaMode());
+
 		// Create video elements for each file
 		for (const file of files) {
 			await this.createVideoElement(file);
@@ -215,6 +302,29 @@ export class VideoView extends MyItemView {
 
 		// Create video wrapper
 		const videoWrapper = itemEl.createDiv({ cls: "video-wrapper" });
+
+		// Create a container for the checkbox
+		const checkboxContainer = videoWrapper.createDiv({ cls: 'video-checkbox-container' });
+
+		// Add checkbox for video selection
+		const checkbox = checkboxContainer.createEl('input', {
+			type: 'checkbox',
+			cls: 'video-checkbox',
+			attr: {
+				title: 'Select video for cinema mode'
+			}
+		});
+		checkbox.addEventListener('change', (e) => {
+			if ((e.target as HTMLInputElement).checked) {
+				this.selectedVideos.add(file.path);
+			} else {
+				this.selectedVideos.delete(file.path);
+			}
+		});
+		// Restore checkbox state if video was previously selected
+		if (this.selectedVideos.has(file.path)) {
+			checkbox.checked = true;
+		}
 
 		// Add menu button
 		const menuButton = videoWrapper.createDiv({ cls: "video-menu-button", text: "⋮" });
@@ -481,7 +591,86 @@ export class VideoView extends MyItemView {
 		});
 	}
 
+	private enterCinemaMode(): void {
+		if (this.selectedVideos.size === 0) {
+			new Notice('Please select at least one video');
+			return;
+		}
+
+		this.isInCinemaMode = true;
+
+		// Create cinema mode container
+		this.cinemaContainer = document.createElement('div');
+		this.cinemaContainer.className = 'cinema-mode-container';
+		document.body.appendChild(this.cinemaContainer);
+
+		// Add selected videos
+		this.selectedVideos.forEach(async (path) => {
+			const file = this.app.vault.getAbstractFileByPath(path);
+			if (file instanceof TFile) {
+				const videoUrl = this.app.vault.getResourcePath(file);
+				// Create wrapper for better video positioning
+				const videoWrapper = document.createElement('div');
+				videoWrapper.className = 'cinema-mode-video-wrapper';
+
+				const video = document.createElement('video');
+				video.className = 'cinema-mode-video';
+				video.src = videoUrl;
+				video.controls = true;
+				video.loop = true; // Enable looping for each video
+				videoWrapper.appendChild(video);
+				this.cinemaContainer?.appendChild(videoWrapper);
+
+				// Only sync play state, not pause
+				video.addEventListener('play', () => {
+					this.cinemaContainer?.querySelectorAll('video').forEach(v => {
+						if (v !== video && v.paused) v.play();
+					});
+				});
+			}
+		});
+
+		// Add controls
+		const controls = document.createElement('div');
+		controls.className = 'cinema-mode-controls';
+
+		const exitButton = document.createElement('button');
+		exitButton.textContent = 'Exit Cinema Mode';
+		exitButton.className = 'ffmpeg-close';
+		exitButton.onclick = () => this.exitCinemaMode();
+		controls.appendChild(exitButton);
+
+		const playAllButton = document.createElement('button');
+		playAllButton.textContent = 'Play All';
+		playAllButton.className = 'ffmpeg-run';
+		playAllButton.onclick = () => {
+			this.cinemaContainer?.querySelectorAll('video').forEach(v => v.play());
+		};
+		controls.appendChild(playAllButton);
+
+		const pauseAllButton = document.createElement('button');
+		pauseAllButton.textContent = 'Pause All';
+		pauseAllButton.className = 'ffmpeg-run';
+		pauseAllButton.onclick = () => {
+			this.cinemaContainer?.querySelectorAll('video').forEach(v => v.pause());
+		};
+		controls.appendChild(pauseAllButton);
+
+		document.body.appendChild(controls);
+	}
+
+	private exitCinemaMode(): void {
+		if (!this.isInCinemaMode) return;
+
+		this.cinemaContainer?.remove();
+		document.querySelector('.cinema-mode-controls')?.remove();
+		this.cinemaContainer = undefined;
+		this.isInCinemaMode = false;
+	}
+
 	async onClose() {
+		// Exit cinema mode if active
+		this.exitCinemaMode();
 		// Remove custom styles
 		const styleEl = document.head.querySelector('style');
 		if (styleEl) {

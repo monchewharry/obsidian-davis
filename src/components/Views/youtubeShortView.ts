@@ -6,10 +6,12 @@ import MyPlugin from "@/main";
 export class YoutubeShortView extends MyItemView {
 	private shortContainerEl?: HTMLElement;
 	private plugin: MyPlugin;
-	private readonly SHORTS_FILE_PATH = "private/twitter/video-archive/YoutubeShorts.md";
+	get shortsFilePath(): string {
+		return this.plugin.settings.youtubeShortsPath;
+	}
 
 	constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
-		super(leaf, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE, "youtube-short", "YouTube Shorts");
+		super(leaf, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE, "youtube", "YouTube Shorts");
 		this.plugin = plugin;
 	}
 
@@ -135,11 +137,11 @@ export class YoutubeShortView extends MyItemView {
 		this.shortContainerEl.empty();
 
 		try {
-			const shortsFile = this.app.vault.getAbstractFileByPath(this.SHORTS_FILE_PATH);
+			const shortsFile = this.app.vault.getAbstractFileByPath(this.shortsFilePath);
 
 			if (!shortsFile || !(shortsFile instanceof TFile)) {
 				this.shortContainerEl.createEl("p", {
-					text: "YouTube Shorts file not found at " + this.SHORTS_FILE_PATH
+					text: "YouTube Shorts file not found at " + this.shortsFilePath
 				});
 				return;
 			}
@@ -156,7 +158,7 @@ export class YoutubeShortView extends MyItemView {
 
 			frontmatter.shortsURL.forEach((category: any) => {
 				const [categoryName, urls] = Object.entries(category)[0];
-				
+
 				const categoryContainer = this.shortContainerEl!.createDiv({ cls: "youtube-shorts-category" });
 				categoryContainer.createEl("h2", {
 					cls: "youtube-shorts-category-title",
@@ -167,35 +169,35 @@ export class YoutubeShortView extends MyItemView {
 
 				if (Array.isArray(urls)) {
 					urls.forEach((url: string, index: number) => {
-				const videoId = this.extractVideoId(url);
-				if (!videoId) return;
+						const videoId = this.extractVideoId(url);
+						if (!videoId) return;
 
-				const shortItem = shortsGrid.createDiv({ cls: "youtube-short-item" });
+						const shortItem = shortsGrid.createDiv({ cls: "youtube-short-item" });
 
-				const wrapper = shortItem.createDiv({ cls: "youtube-short-wrapper" });
-				const iframe = wrapper.createEl("iframe", {
-					cls: "youtube-short-iframe",
-					attr: {
-						src: `https://www.youtube.com/embed/${videoId}?rel=0`,
-						allowfullscreen: "",
-						allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-					}
-				});
+						const wrapper = shortItem.createDiv({ cls: "youtube-short-wrapper" });
+						const iframe = wrapper.createEl("iframe", {
+							cls: "youtube-short-iframe",
+							attr: {
+								src: `https://www.youtube.com/embed/${videoId}?rel=0`,
+								allowfullscreen: "",
+								allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							}
+						});
 
-				const info = shortItem.createDiv({ cls: "youtube-short-info" });
-				info.createEl("div", {
-					cls: "youtube-short-title",
-					text: `Short #${index + 1}`
-				});
-				const metaDiv = info.createEl("div", { cls: "youtube-short-meta" });
-				metaDiv.createEl("a", {
-					text: url,
-					href: url,
-					attr: {
-						target: "_blank",
-						rel: "noopener"
-					}
-				});
+						const info = shortItem.createDiv({ cls: "youtube-short-info" });
+						info.createEl("div", {
+							cls: "youtube-short-title",
+							text: `Short #${index + 1}`
+						});
+						const metaDiv = info.createEl("div", { cls: "youtube-short-meta" });
+						metaDiv.createEl("a", {
+							text: url,
+							href: url,
+							attr: {
+								target: "_blank",
+								rel: "noopener"
+							}
+						});
 					});
 				}
 			});

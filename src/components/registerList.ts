@@ -46,7 +46,7 @@ interface RibbonList {
 export const ribbonList = (app: App): RibbonList[] => {
 	return [
 		{
-			icon: "smartphone",
+			icon: "youtube",
 			title: "Open YouTube Shorts",
 			callback: async () => {
 				await activateSideBarView(app, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
