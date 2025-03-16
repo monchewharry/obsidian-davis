@@ -125,7 +125,7 @@ export class BilibiliView extends MyItemView {
 							const src = iframeEl.getAttribute('src');
 							wrapper.createEl("iframe", {
 								attr: {
-									src: 'https:' + src,
+									src: 'https:' + src + '&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1',
 									scrolling: "no",
 									border: "0",
 									frameborder: "no",
