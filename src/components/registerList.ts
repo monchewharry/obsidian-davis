@@ -5,6 +5,7 @@ import {
 	ResumeView,
 	TranscriptView,
 	VideoView,
+	YoutubeShortView,
 } from "@/components/Views";
 import {
 	formatNote,
@@ -44,6 +45,13 @@ interface RibbonList {
 
 export const ribbonList = (app: App): RibbonList[] => {
 	return [
+		{
+			icon: "smartphone",
+			title: "Open YouTube Shorts",
+			callback: async () => {
+				await activateSideBarView(app, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
+			},
+		},
 		{
 			icon: "video",
 			title: "Open Video Archive",
@@ -122,6 +130,10 @@ interface ViewList {
 }
 export const viewList = (plugin: MyPlugin): ViewList[] => [
 	{
+		type: CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE,
+		viewCreator: (leaf) => new YoutubeShortView(leaf, plugin),
+	},
+	{
 		type: CustomViewTypes.VIDEO_VIEW_TYPE,
 		viewCreator: (leaf) => new VideoView(leaf, plugin),
 	},
@@ -173,6 +185,13 @@ export const eventRefList = (app: App): EventRef[] => {
 
 export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin): Command[] => {
 	return [
+		{
+			id: "open-youtube-shorts",
+			name: "Open YouTube Shorts",
+			callback: async () => {
+				await activateSideBarView(app, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
+			}
+		},
 		{
 			id: "my-video-view",
 			name: "Open Video Archive",

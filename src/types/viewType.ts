@@ -12,7 +12,9 @@ export enum CustomViewTypes {
 	/** Youtube Transcript view */
 	TRANSCRIPT_TYPE_VIEW = "ytTranscript-view",
 	/** Video archive view */
-	VIDEO_VIEW_TYPE = "video-archive-view"
+	VIDEO_VIEW_TYPE = "video-archive-view",
+	/** YouTube Shorts view */
+	YOUTUBE_SHORT_VIEW_TYPE = "youtube-shorts-view"
 }
 
 /**
