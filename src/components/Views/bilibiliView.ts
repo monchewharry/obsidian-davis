@@ -6,6 +6,9 @@ import MyPlugin from "@/main";
 export class BilibiliView extends MyItemView {
 	private videoContainerEl?: HTMLElement;
 	private plugin: MyPlugin;
+	private selectedVideos: Set<string> = new Set();
+	private isInCinemaMode: boolean = false;
+	private cinemaContainer?: HTMLElement;
 
 	constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
 		super(leaf, CustomViewTypes.BILIBILI_VIEW_TYPE, "bilibili", "Bilibili Videos");
@@ -29,6 +32,89 @@ export class BilibiliView extends MyItemView {
 		// Add custom styles
 		const style = document.createElement("style");
 		style.textContent = `
+            .cinema-mode-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: black;
+                z-index: 1000;
+                display: grid;
+                gap: 10px;
+                padding: 10px;
+                overflow: hidden;
+                width: 100vw;
+                height: 100vh;
+            }
+            .cinema-mode-container.single-video {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .cinema-mode-container.two-videos {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 20px;
+            }
+            .cinema-mode-container.multi-videos {
+                grid-template-columns: repeat(auto-fit, minmax(45vw, 1fr));
+                grid-auto-rows: 1fr;
+            }
+            .cinema-mode-video-wrapper {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+            .cinema-mode-video-wrapper iframe {
+                width: 100%;
+                height: 100%;
+                max-height: calc(100vh - 40px);
+            }
+            .cinema-mode-controls {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px 20px;
+                border-radius: 5px;
+                display: flex;
+                gap: 10px;
+                z-index: 1001;
+            }
+            .cinema-mode-button {
+                background: var(--interactive-accent);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+            .video-checkbox-container {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                z-index: 10;
+                background-color: var(--background-primary);
+                padding: 6px;
+                border-radius: 4px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0.9;
+            }
+            .video-wrapper:hover .video-checkbox-container {
+                opacity: 1;
+            }
+            .video-checkbox {
+                transform: scale(1.5);
+                cursor: pointer;
+                margin: 0;
+                accent-color: var(--interactive-accent);
+            }
             .bilibili-videos-container {
                 padding: 20px;
                 max-width: 100%;
@@ -87,6 +173,15 @@ export class BilibiliView extends MyItemView {
 		if (!this.videoContainerEl) return;
 		this.videoContainerEl.empty();
 
+		// Add cinema mode button if there are selected videos
+		if (this.selectedVideos.size > 0) {
+			const cinemaButton = this.videoContainerEl.createEl('button', {
+				cls: 'cinema-mode-button',
+				text: 'Enter Cinema Mode'
+			});
+			cinemaButton.addEventListener('click', () => this.enterCinemaMode());
+		}
+
 		try {
 			const file = this.app.vault.getAbstractFileByPath(this.videosFilePath());
 			if (!(file instanceof TFile)) {
@@ -116,6 +211,13 @@ export class BilibiliView extends MyItemView {
 						const videoItem = videosGrid.createDiv({ cls: "bilibili-video-item" });
 						const wrapper = videoItem.createDiv({ cls: "bilibili-video-wrapper" });
 
+						// Add checkbox container
+						const checkboxContainer = wrapper.createDiv({ cls: 'video-checkbox-container' });
+						const checkbox = checkboxContainer.createEl('input', {
+							type: 'checkbox',
+							cls: 'video-checkbox'
+						});
+
 						// Parse the iframe HTML to extract src and other attributes
 						const tempDiv = document.createElement('div');
 						tempDiv.innerHTML = iframeHtml;
@@ -123,6 +225,11 @@ export class BilibiliView extends MyItemView {
 
 						if (iframeEl) {
 							const src = iframeEl.getAttribute('src');
+							const videoId = this.extractVideoId(src || "");
+							if (videoId) {
+								checkbox.checked = this.selectedVideos.has(videoId);
+								checkbox.addEventListener('change', () => this.toggleVideoSelection(videoId));
+							}
 							wrapper.createEl("iframe", {
 								attr: {
 									src: 'https:' + src + '&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1',
@@ -140,7 +247,6 @@ export class BilibiliView extends MyItemView {
 								text: `Video #${index + 1}`
 							});
 							const metaDiv = info.createEl("div", { cls: "bilibili-video-meta" });
-							const videoId = this.extractVideoId(src || "");
 							if (videoId) {
 								metaDiv.createEl("a", {
 									text: `BV${videoId}`,
@@ -193,5 +299,65 @@ export class BilibiliView extends MyItemView {
 			return bvidMatch[1].replace(/^BV/, '');
 		}
 		return null;
+	}
+
+	private toggleVideoSelection(videoId: string) {
+		if (this.selectedVideos.has(videoId)) {
+			this.selectedVideos.delete(videoId);
+		} else {
+			this.selectedVideos.add(videoId);
+		}
+		this.loadVideos();
+	}
+
+	private enterCinemaMode() {
+		if (this.selectedVideos.size === 0) return;
+		this.isInCinemaMode = true;
+
+		// Create cinema mode container
+		this.cinemaContainer = document.body.createDiv({ cls: 'cinema-mode-container' });
+
+		// Add appropriate class based on number of videos
+		if (this.selectedVideos.size === 1) {
+			this.cinemaContainer.addClass('single-video');
+		} else if (this.selectedVideos.size === 2) {
+			this.cinemaContainer.addClass('two-videos');
+		} else {
+			this.cinemaContainer.addClass('multi-videos');
+		}
+
+		// Add selected videos
+		this.selectedVideos.forEach(videoId => {
+			const wrapper = this.cinemaContainer!.createDiv({ cls: 'cinema-mode-video-wrapper' });
+			wrapper.createEl('iframe', {
+				attr: {
+					src: `https://player.bilibili.com/player.html?bvid=BV${videoId}&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1`,
+					allowfullscreen: 'true',
+					frameborder: 'no',
+					scrolling: 'no'
+				}
+			});
+		});
+
+		// Add controls
+		const controls = this.cinemaContainer.createDiv({ cls: 'cinema-mode-controls' });
+		const exitButton = controls.createEl('button', {
+			cls: 'cinema-mode-button',
+			text: 'Exit Cinema Mode'
+		});
+		exitButton.addEventListener('click', () => this.exitCinemaMode());
+
+		// Add keyboard shortcut for exit
+		const escHandler = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') this.exitCinemaMode();
+		};
+		document.addEventListener('keydown', escHandler);
+	}
+
+	private exitCinemaMode() {
+		if (!this.isInCinemaMode || !this.cinemaContainer) return;
+		this.cinemaContainer.remove();
+		this.cinemaContainer = undefined;
+		this.isInCinemaMode = false;
 	}
 }
