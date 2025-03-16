@@ -38,12 +38,25 @@ export class YoutubeShortView extends MyItemView {
 		styleEl.textContent = `
             .youtube-shorts-container {
                 padding: 16px;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-                gap: 16px;
                 height: 100%;
                 overflow-y: auto;
                 background: var(--background-primary);
+            }
+            .youtube-shorts-category {
+                margin-bottom: 32px;
+            }
+            .youtube-shorts-category-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: var(--text-normal);
+                margin-bottom: 16px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid var(--background-modifier-border);
+            }
+            .youtube-shorts-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+                gap: 16px;
             }
             .youtube-short-item {
                 background: var(--background-secondary);
@@ -122,11 +135,23 @@ export class YoutubeShortView extends MyItemView {
 				return;
 			}
 
-			frontmatter.shortsURL.forEach((url: string, index: number) => {
+			frontmatter.shortsURL.forEach((category: any) => {
+				const [categoryName, urls] = Object.entries(category)[0];
+				
+				const categoryContainer = this.shortContainerEl!.createDiv({ cls: "youtube-shorts-category" });
+				categoryContainer.createEl("h2", {
+					cls: "youtube-shorts-category-title",
+					text: this.formatCategoryName(categoryName)
+				});
+
+				const shortsGrid = categoryContainer.createDiv({ cls: "youtube-shorts-grid" });
+
+				if (Array.isArray(urls)) {
+					urls.forEach((url: string, index: number) => {
 				const videoId = this.extractVideoId(url);
 				if (!videoId) return;
 
-				const shortItem = this.shortContainerEl!.createDiv({ cls: "youtube-short-item" });
+				const shortItem = shortsGrid.createDiv({ cls: "youtube-short-item" });
 
 				const wrapper = shortItem.createDiv({ cls: "youtube-short-wrapper" });
 				const iframe = wrapper.createEl("iframe", {
@@ -152,6 +177,8 @@ export class YoutubeShortView extends MyItemView {
 						rel: "noopener"
 					}
 				});
+					});
+				}
 			});
 
 		} catch (error) {
@@ -174,6 +201,15 @@ export class YoutubeShortView extends MyItemView {
 			console.error("Error parsing frontmatter:", e);
 			return null;
 		}
+	}
+
+	private formatCategoryName(name: string): string {
+		// Convert names like 'star1' to 'Star 1'
+		return name
+			.replace(/([A-Z])/g, ' $1') // Add space before capital letters
+			.replace(/([0-9])/g, ' $1') // Add space before numbers
+			.replace(/^./, str => str.toUpperCase()) // Capitalize first letter
+			.trim();
 	}
 
 	private extractVideoId(url: string): string | null {
