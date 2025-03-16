@@ -44,7 +44,7 @@ interface RibbonList {
 	className?: string;
 }
 
-export const ribbonList = (app: App): RibbonList[] => {
+export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 	return [
 		{
 			icon: "play-circle",
@@ -113,7 +113,7 @@ export const ribbonList = (app: App): RibbonList[] => {
 			title: "open personal website",
 			callback: async (evt: MouseEvent) => {
 				await activateSideBarView(app, "webviewer", {
-					url: "https://monchewharry.github.io/",
+					url: settings.personalWebsiteUrl,
 					navigate: true,
 				});
 			},

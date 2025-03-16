@@ -26,7 +26,11 @@ interface VideoArchiveSettings {
 	youtubeShortsPath: string;
 }
 
-export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings, YTranscriptSettings, VideoArchiveSettings {
+interface WebsiteSettings {
+	personalWebsiteUrl: string;
+}
+
+export interface DavisSettings extends hugoBloxSettings, RfrPluginSettings, YTranscriptSettings, VideoArchiveSettings, WebsiteSettings {
 
 };
 
@@ -47,4 +51,5 @@ export const DEFAULT_SETTINGS: DavisSettings = {
 	videoArchivePath: 'private/twitter/video-archive',
 	ffmpegPath: '/opt/homebrew/bin/ffmpeg',
 	youtubeShortsPath: 'private/twitter/video-archive/YoutubeShorts.md',
+	personalWebsiteUrl: 'https://monchewharry.github.io/',
 };

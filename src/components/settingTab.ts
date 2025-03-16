@@ -134,5 +134,17 @@ export class DavisSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					}),
 			);
+		containerEl.createEl("h4", { text: "Settings for Saved Website" });
+		new Setting(containerEl)
+			.setName("Personal Website URL")
+			.setDesc("URL to your personal website")
+			.addText((text) =>
+				text
+					.setValue(this.plugin.settings.personalWebsiteUrl)
+					.onChange(async (value) => {
+						this.plugin.settings.personalWebsiteUrl = value;
+						await this.plugin.saveSettings();
+					}),
+			);
 	}
 }
