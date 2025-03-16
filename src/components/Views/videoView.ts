@@ -3,7 +3,6 @@ import { MyItemView } from "@/lib/myItemView";
 import { Menu, TFile, WorkspaceLeaf, Notice } from "obsidian";
 import { exec } from "child_process";
 import MyPlugin from "@/main";
-import { error } from "console";
 
 export class VideoView extends MyItemView {
 	private videoContainerEl?: HTMLElement;
@@ -96,6 +95,19 @@ export class VideoView extends MyItemView {
 				flex-direction: column;
                 gap: 12px;
                 height: 240px;
+            }
+            .ffmpeg-title {
+                font-size: 16px;
+                font-weight: 500;
+                color: var(--text-normal);
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .ffmpeg-title-icon {
+                color: var(--text-muted);
+                font-size: 14px;
             }
             .ffmpeg-input {
 				width: 70%;
@@ -257,6 +269,11 @@ export class VideoView extends MyItemView {
 		this.consoleEl.style.display = 'flex';
 		this.currentVideoFile = file;
 		this.consoleEl.empty();
+
+		// Add title with video name
+		const titleArea = this.consoleEl.createDiv({ cls: 'ffmpeg-title' });
+		titleArea.createSpan({ cls: 'ffmpeg-title-icon', text: '🎬' });
+		titleArea.createSpan({ text: `Processing: ${file.basename}` });
 
 		// Create input area with template selector
 		const inputArea = this.consoleEl.createDiv({ cls: 'ffmpeg-input' });
@@ -457,7 +474,7 @@ export class VideoView extends MyItemView {
 
 				// Give the file system a moment to finish writing
 				await new Promise(resolve => setTimeout(resolve, 1000));
-				
+
 				// Refresh the video list
 				await this.loadVideos();
 			});

@@ -174,6 +174,13 @@ export const eventRefList = (app: App): EventRef[] => {
 export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin): Command[] => {
 	return [
 		{
+			id: "my-video-view",
+			name: "Open Video Archive",
+			callback: async () => {
+				await activateSideBarView(app, CustomViewTypes.VIDEO_VIEW_TYPE);
+			}
+		},
+		{
 			id: "my-commit-and-sync",
 			name: "Commit and Sync (obsidian-git)",
 			callback: async () => {
