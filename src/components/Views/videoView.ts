@@ -107,12 +107,30 @@ export class VideoView extends MyItemView {
                 background: black;
                 z-index: 1000;
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(45vw, 1fr));
                 gap: 10px;
                 padding: 10px;
                 overflow: hidden;
                 width: 100vw;
                 height: 100vh;
+            }
+            /* Single video layout */
+            .cinema-mode-container.single-video {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            /* Two videos layout */
+            .cinema-mode-container.two-videos {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 20px;
+            }
+            /* Three or more portrait videos */
+            .cinema-mode-container.portrait-videos:not(.single-video):not(.two-videos) {
+                grid-template-columns: repeat(3, 1fr);
+                align-items: center;
+            }
+            /* Three or more landscape videos */
+            .cinema-mode-container.landscape-videos:not(.single-video):not(.two-videos) {
+                grid-template-columns: repeat(auto-fit, minmax(45vw, 1fr));
             }
             .cinema-mode-video-wrapper {
                 width: 100%;
@@ -604,8 +622,20 @@ export class VideoView extends MyItemView {
 		this.cinemaContainer.className = 'cinema-mode-container';
 		document.body.appendChild(this.cinemaContainer);
 
-		// Add selected videos
-		this.selectedVideos.forEach(async (path) => {
+		// Check if all videos are portrait mode
+		let allPortrait = true;
+		const checkVideoOrientation = (video: HTMLVideoElement) => {
+			if (video.videoHeight <= video.videoWidth) {
+				allPortrait = false;
+			}
+		};
+
+		// Create a promise that resolves when video metadata is loaded
+		const videoLoadPromises: Promise<void>[] = [];
+
+		// Add selected videos and check their orientation
+		this.selectedVideos.forEach((path) => {
+			const promise = new Promise<void>((resolve) => {
 			const file = this.app.vault.getAbstractFileByPath(path);
 			if (file instanceof TFile) {
 				const videoUrl = this.app.vault.getResourcePath(file);
@@ -618,6 +648,13 @@ export class VideoView extends MyItemView {
 				video.src = videoUrl;
 				video.controls = true;
 				video.loop = true; // Enable looping for each video
+
+				// Check video orientation once metadata is loaded
+				video.addEventListener('loadedmetadata', () => {
+					checkVideoOrientation(video);
+					resolve();
+				});
+
 				videoWrapper.appendChild(video);
 				this.cinemaContainer?.appendChild(videoWrapper);
 
@@ -627,6 +664,22 @@ export class VideoView extends MyItemView {
 						if (v !== video && v.paused) v.play();
 					});
 				});
+			}
+			});
+			videoLoadPromises.push(promise);
+		});
+
+		// Wait for all videos to load their metadata, then set the appropriate layout
+		Promise.all(videoLoadPromises).then(() => {
+			// Add class based on number of videos
+			if (this.selectedVideos.size === 1) {
+				this.cinemaContainer?.classList.add('single-video');
+			} else if (this.selectedVideos.size === 2) {
+				this.cinemaContainer?.classList.add('two-videos');
+			} else if (allPortrait) {
+				this.cinemaContainer?.classList.add('portrait-videos');
+			} else {
+				this.cinemaContainer?.classList.add('landscape-videos');
 			}
 		});
 
