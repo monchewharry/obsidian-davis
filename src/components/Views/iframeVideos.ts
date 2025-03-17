@@ -246,14 +246,27 @@ export class IframeVideoCollectionView extends MyItemView {
 							});
 							const metaDiv = info.createEl("div", { cls: "bilibili-video-meta" });
 							if (videoId) {
-								metaDiv.createEl("a", {
-									text: `BV${videoId}`,
-									href: `https://www.bilibili.com/video/BV${videoId}`,
-									attr: {
-										target: "_blank",
-										rel: "noopener"
-									}
-								});
+								const [platform, id] = videoId.split(':');
+								let text, href;
+								
+								if (platform === 'bilibili') {
+									text = `BV${id}`;
+									href = `https://www.bilibili.com/video/BV${id}`;
+								} else if (platform === 'youtube') {
+									text = `YouTube: ${id}`;
+									href = `https://www.youtube.com/watch?v=${id}`;
+								}
+
+								if (text && href) {
+									metaDiv.createEl("a", {
+										text,
+										href,
+										attr: {
+											target: "_blank",
+											rel: "noopener"
+										}
+									});
+								}
 							}
 						}
 					});

@@ -151,7 +151,7 @@ export class VideoView extends MyItemView {
                 bottom: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: rgba(0, 0, 0, 0.7);
+                background: rgba(0, 0, 0, 0.0);
                 padding: 10px 20px;
                 border-radius: 5px;
                 display: flex;
@@ -161,10 +161,21 @@ export class VideoView extends MyItemView {
             .cinema-mode-button {
                 background: var(--interactive-accent);
                 color: white;
-                padding: 8px 16px;
-                border-radius: 4px;
+                padding: 12px 24px;
+                border-radius: 8px;
                 cursor: pointer;
-                margin-top: 10px;
+                margin-top: 20px;
+                font-size: 16px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                border: 2px solid transparent;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .cinema-mode-button:hover {
+                background: var(--interactive-accent-hover);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                border-color: var(--background-modifier-border);
             }
             .video-menu-button {
                 position: absolute;
@@ -303,8 +314,13 @@ export class VideoView extends MyItemView {
 		// Add cinema mode button
 		const cinemaButton = this.videoContainerEl.createEl('button', {
 			cls: 'cinema-mode-button',
-			text: 'Enter Cinema Mode'
+			text: '🎬 Enter Cinema Mode'
 		});
+		cinemaButton.style.position = 'sticky';
+		cinemaButton.style.bottom = '20px';
+		cinemaButton.style.left = '50%';
+		cinemaButton.style.transform = 'translateX(-50%)';
+		cinemaButton.style.zIndex = '10';
 		cinemaButton.addEventListener('click', () => this.enterCinemaMode());
 
 		// Create video elements for each file
@@ -636,35 +652,35 @@ export class VideoView extends MyItemView {
 		// Add selected videos and check their orientation
 		this.selectedVideos.forEach((path) => {
 			const promise = new Promise<void>((resolve) => {
-			const file = this.app.vault.getAbstractFileByPath(path);
-			if (file instanceof TFile) {
-				const videoUrl = this.app.vault.getResourcePath(file);
-				// Create wrapper for better video positioning
-				const videoWrapper = document.createElement('div');
-				videoWrapper.className = 'cinema-mode-video-wrapper';
+				const file = this.app.vault.getAbstractFileByPath(path);
+				if (file instanceof TFile) {
+					const videoUrl = this.app.vault.getResourcePath(file);
+					// Create wrapper for better video positioning
+					const videoWrapper = document.createElement('div');
+					videoWrapper.className = 'cinema-mode-video-wrapper';
 
-				const video = document.createElement('video');
-				video.className = 'cinema-mode-video';
-				video.src = videoUrl;
-				video.controls = true;
-				video.loop = true; // Enable looping for each video
+					const video = document.createElement('video');
+					video.className = 'cinema-mode-video';
+					video.src = videoUrl;
+					video.controls = true;
+					video.loop = true; // Enable looping for each video
 
-				// Check video orientation once metadata is loaded
-				video.addEventListener('loadedmetadata', () => {
-					checkVideoOrientation(video);
-					resolve();
-				});
-
-				videoWrapper.appendChild(video);
-				this.cinemaContainer?.appendChild(videoWrapper);
-
-				// Only sync play state, not pause
-				video.addEventListener('play', () => {
-					this.cinemaContainer?.querySelectorAll('video').forEach(v => {
-						if (v !== video && v.paused) v.play();
+					// Check video orientation once metadata is loaded
+					video.addEventListener('loadedmetadata', () => {
+						checkVideoOrientation(video);
+						resolve();
 					});
-				});
-			}
+
+					videoWrapper.appendChild(video);
+					this.cinemaContainer?.appendChild(videoWrapper);
+
+					// Only sync play state, not pause
+					video.addEventListener('play', () => {
+						this.cinemaContainer?.querySelectorAll('video').forEach(v => {
+							if (v !== video && v.paused) v.play();
+						});
+					});
+				}
 			});
 			videoLoadPromises.push(promise);
 		});
