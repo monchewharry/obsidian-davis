@@ -113,7 +113,7 @@ export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 			title: "open personal website",
 			callback: async (evt: MouseEvent) => {
 				await activateSideBarView(app, "webviewer", {
-					url: settings.personalWebsiteUrl,
+					url: settings.personalWebsiteUrl, // https://monchewharry.github.io/
 					navigate: true,
 				});
 			},

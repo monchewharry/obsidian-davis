@@ -36,7 +36,7 @@ export default class MyPlugin extends Plugin {
 		loadFormatterConfig();
 		new Notice("🚀 Plugin loaded successfully");
 
-		ribbonList(this.app).forEach((ribbon) => {
+		ribbonList(this.app, this.settings).forEach((ribbon) => {
 			const ribbonIconEl = this.addRibbonIcon(
 				ribbon.icon,
 				ribbon.title,
