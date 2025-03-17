@@ -6,7 +6,7 @@ import {
 	TranscriptView,
 	VideoView,
 	YoutubeShortView,
-	BilibiliView,
+	IframeVideoCollectionView,
 } from "@/components/Views";
 import {
 	formatNote,
@@ -48,9 +48,9 @@ export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 	return [
 		{
 			icon: "play-circle",
-			title: "Open Bilibili Videos",
+			title: "Open iframe Videos",
 			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.BILIBILI_VIEW_TYPE);
+				await activateSideBarView(app, CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE);
 			},
 		},
 		{
@@ -138,8 +138,8 @@ interface ViewList {
 }
 export const viewList = (plugin: MyPlugin): ViewList[] => [
 	{
-		type: CustomViewTypes.BILIBILI_VIEW_TYPE,
-		viewCreator: (leaf) => new BilibiliView(leaf, plugin),
+		type: CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE,
+		viewCreator: (leaf) => new IframeVideoCollectionView(leaf, plugin),
 	},
 	{
 		type: CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE,
@@ -166,12 +166,12 @@ export const viewList = (plugin: MyPlugin): ViewList[] => [
 		viewCreator: (leaf) => new ResumeView(leaf),
 	},
 	{
-		type: CustomViewTypes.IframeViewTypes.CHATBOT_VIEW_TYPE,
+		type: CustomViewTypes.IframeFullViewTypes.CHATBOT_VIEW_TYPE,
 		viewCreator: (leaf) =>
 			new IframeView(
 				leaf,
 				"https://player.bilibili.com/player.html?isOutside=true&aid=1256358045&bvid=BV1KE4m1d7C4&cid=1639341950&p=1",//"https://nextjs-chat-ruby-sigma-91.vercel.app",
-				CustomViewTypes.IframeViewTypes.CHATBOT_VIEW_TYPE,
+				CustomViewTypes.IframeFullViewTypes.CHATBOT_VIEW_TYPE,
 				"Chatbot"
 			),
 	},
@@ -201,7 +201,7 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 			id: "open-bilibili-videos",
 			name: "Open Bilibili Videos",
 			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.BILIBILI_VIEW_TYPE);
+				await activateSideBarView(app, CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE);
 			}
 		},
 		{
@@ -323,7 +323,7 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 			callback: async () => {
 				await activateSideBarView(
 					app,
-					CustomViewTypes.IframeViewTypes.CHATBOT_VIEW_TYPE
+					CustomViewTypes.IframeFullViewTypes.CHATBOT_VIEW_TYPE
 				);
 			},
 		},

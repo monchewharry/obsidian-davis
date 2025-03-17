@@ -87,7 +87,7 @@ export default class MyPlugin extends Plugin {
 	onunload() {
 		new Notice("💥unloading my plugin");
 		this.app.workspace.detachLeavesOfType(CustomViewTypes.RESUME_VIEW_TYPE);
-		this.app.workspace.detachLeavesOfType(CustomViewTypes.IframeViewTypes.CHATBOT_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(CustomViewTypes.IframeFullViewTypes.CHATBOT_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(BuiltInLeafTypes.Webviewer);
 	}
 	async saveSettings() {

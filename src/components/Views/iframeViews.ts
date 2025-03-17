@@ -13,7 +13,7 @@ export class IframeView extends MyItemView {
 	constructor(
 		leaf: WorkspaceLeaf,
 		iframeSource: string,
-		viewtype: CustomViewTypes.IframeViewTypes,
+		viewtype: CustomViewTypes.IframeFullViewTypes,
 		displayText: string
 	) {
 		super(leaf, viewtype, "picture-in-picture", displayText);

@@ -48,6 +48,17 @@ export class DavisSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 					new Notice('✅ YouTube Shorts file path updated');
 				}));
+		new Setting(containerEl)
+			.setName('Iframe Collection File')
+			.setDesc('Path to your iframe collection markdown file within the vault')
+			.addText(text => text
+				.setPlaceholder('Enter path...')
+				.setValue(this.plugin.settings.iframeVideoPath)
+				.onChange(async (value) => {
+					this.plugin.settings.iframeVideoPath = value;
+					await this.plugin.saveSettings();
+					new Notice('✅ Iframe collection file path updated');
+				}));
 
 		containerEl.createEl('h4', { text: 'Hugo Blox Settings' });
 		new Setting(containerEl)

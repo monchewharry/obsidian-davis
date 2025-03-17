@@ -3,20 +3,17 @@ import { MyItemView } from "@/lib/myItemView";
 import { TFile, WorkspaceLeaf, parseYaml } from "obsidian";
 import MyPlugin from "@/main";
 
-export class BilibiliView extends MyItemView {
+export class IframeVideoCollectionView extends MyItemView {
 	private videoContainerEl?: HTMLElement;
 	private plugin: MyPlugin;
 	private selectedVideos: Set<string> = new Set();
 	private isInCinemaMode: boolean = false;
 	private cinemaContainer?: HTMLElement;
-
+	private videosFilePath: string;
 	constructor(leaf: WorkspaceLeaf, plugin: MyPlugin) {
-		super(leaf, CustomViewTypes.BILIBILI_VIEW_TYPE, "play-circle", "Bilibili Videos");
+		super(leaf, CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE, "play-circle", "Iframe Videos");
 		this.plugin = plugin;
-	}
-
-	videosFilePath(): string {
-		return "private/twitter/video-archive/bilibili.md";
+		this.videosFilePath = this.plugin.settings.iframeVideoPath;
 	}
 
 	async onOpen() {
@@ -183,7 +180,7 @@ export class BilibiliView extends MyItemView {
 		}
 
 		try {
-			const file = this.app.vault.getAbstractFileByPath(this.videosFilePath());
+			const file = this.app.vault.getAbstractFileByPath(this.videosFilePath);
 			if (!(file instanceof TFile)) {
 				throw new Error("Bilibili videos file not found");
 			}
@@ -232,7 +229,8 @@ export class BilibiliView extends MyItemView {
 							}
 							wrapper.createEl("iframe", {
 								attr: {
-									src: 'https:' + src + '&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1',
+									src: src?.startsWith("https://") ? src + '&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1' :
+										'https:' + src + '&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1',
 									scrolling: "no",
 									border: "0",
 									frameborder: "no",
@@ -294,10 +292,18 @@ export class BilibiliView extends MyItemView {
 	}
 
 	private extractVideoId(url: string): string | null {
+		// Handle Bilibili videos
 		const bvidMatch = url.match(/bvid=([^&]+)/i);
 		if (bvidMatch && bvidMatch[1]) {
-			return bvidMatch[1].replace(/^BV/, '');
+			return 'bilibili:' + bvidMatch[1].replace(/^BV/, '');
 		}
+
+		// Handle YouTube videos
+		const youtubeMatch = url.match(/youtube.com\/embed\/([^?]+)/);
+		if (youtubeMatch && youtubeMatch[1]) {
+			return 'youtube:' + youtubeMatch[1];
+		}
+
 		return null;
 	}
 
@@ -329,9 +335,18 @@ export class BilibiliView extends MyItemView {
 		// Add selected videos
 		this.selectedVideos.forEach(videoId => {
 			const wrapper = this.cinemaContainer!.createDiv({ cls: 'cinema-mode-video-wrapper' });
+			const [platform, id] = videoId.split(':');
+			
+			let src = '';
+			if (platform === 'bilibili') {
+				src = `https://player.bilibili.com/player.html?bvid=BV${id}&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1`;
+			} else if (platform === 'youtube') {
+				src = `https://www.youtube.com/embed/${id}`;
+			}
+
 			wrapper.createEl('iframe', {
 				attr: {
-					src: `https://player.bilibili.com/player.html?bvid=BV${videoId}&autoplay=0&loop=1&high_quality=1&danmaku=0&as_wide=1`,
+					src,
 					allowfullscreen: 'true',
 					frameborder: 'no',
 					scrolling: 'no'

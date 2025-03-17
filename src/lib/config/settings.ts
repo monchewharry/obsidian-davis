@@ -24,6 +24,7 @@ interface VideoArchiveSettings {
 	videoArchivePath: string;
 	ffmpegPath: string;
 	youtubeShortsPath: string;
+	iframeVideoPath: string;
 }
 
 interface WebsiteSettings {
@@ -51,5 +52,6 @@ export const DEFAULT_SETTINGS: DavisSettings = {
 	videoArchivePath: 'private/twitter/video-archive',
 	ffmpegPath: '/opt/homebrew/bin/ffmpeg',
 	youtubeShortsPath: 'private/twitter/video-archive/YoutubeShorts.md',
+	iframeVideoPath: 'private/twitter/video-archive/iframes.md',
 	personalWebsiteUrl: 'https://monchewharry.github.io/',
 };

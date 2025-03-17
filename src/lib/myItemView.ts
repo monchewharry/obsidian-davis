@@ -13,7 +13,7 @@ export abstract class MyItemView extends ItemView {
 
 	constructor(
 		leaf: WorkspaceLeaf,
-		viewtype: CustomViewTypes | CustomViewTypes.IframeViewTypes,
+		viewtype: CustomViewTypes | CustomViewTypes.IframeFullViewTypes,
 		icon: IconName,
 		displayText: string
 	) {

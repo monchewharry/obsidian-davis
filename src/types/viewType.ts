@@ -16,7 +16,7 @@ export enum CustomViewTypes {
 	/** YouTube Shorts view */
 	YOUTUBE_SHORT_VIEW_TYPE = "youtube-shorts-view",
 	/** Bilibili video view */
-	BILIBILI_VIEW_TYPE = "bilibili-view"
+	IFRAME_VIDEO_VIEW_TYPE = "iframe-video-view"
 }
 
 /**
@@ -24,9 +24,9 @@ export enum CustomViewTypes {
  */
 export namespace CustomViewTypes {
 	/**
-	 * View types that use iframes for content display.
+	 * View types that use one page iframe for content display.
 	 */
-	export enum IframeViewTypes {
+	export enum IframeFullViewTypes {
 		/** Chatbot interface view */
 		CHATBOT_VIEW_TYPE = "chat-bot-view",
 	}
