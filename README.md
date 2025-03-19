@@ -4,7 +4,9 @@
 
 ## features
 
-- metadata management: [technohiker/obsidian-multi-properties](https://github.com/technohiker/obsidian-multi-properties)
+- metadata management
+  - [technohiker/obsidian-multi-properties](https://github.com/technohiker/obsidian-multi-properties)
+  - local ai generation
 - note formatting
 - pipeline for external plugins: 
   - [dataview](https://github.com/blacksmithgu/obsidian-dataview)

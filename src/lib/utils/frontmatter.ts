@@ -74,6 +74,17 @@ export const getMetadata = async (
  * @param folder The folder to search
  * @returns An array of existing frontmatter keys
  */
+export async function updateFrontmatter(app: App, file: TFile, key: string, value: any): Promise<void> {
+    try {
+        await app.fileManager.processFrontMatter(file, (frontmatter) => {
+            frontmatter[key] = value;
+        });
+    } catch (error) {
+        console.error(`Error updating frontmatter in ${file.path}:`, error);
+        throw error;
+    }
+}
+
 export async function getFolderFrontmatterKeys(
 	app: App,
 	folder: TFolder

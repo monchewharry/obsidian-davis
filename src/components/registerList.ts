@@ -35,7 +35,7 @@ import { publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
 import MyPlugin from "@/main";
 import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
 import { YtPromptModal } from "./Modals/ytPromptModal";
-import { runOtherPluginCommand, kebabCase, ollamaEditorCallback } from "@/lib/utils";
+import { runOtherPluginCommand, kebabCase, ollamaEditorCallback, ollamaSummaryField } from "@/lib/utils";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -358,6 +358,23 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 			},
 		},
 	];
+
+	// Add Ollama summary command
+	commands.push({
+		id: "ollama-generate-summary",
+		name: "Generate AI Summary",
+		editorCallback: (editor: Editor) => {
+			ollamaSummaryField(editor, plugin, false);
+		},
+	});
+
+	commands.push({
+		id: "ollama-update-summary",
+		name: "Update AI Summary",
+		editorCallback: (editor: Editor) => {
+			ollamaSummaryField(editor, plugin, true);
+		},
+	});
 
 	// Add Ollama commands
 	plugin.settings.commands.forEach((command) => {
