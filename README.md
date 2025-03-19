@@ -6,12 +6,13 @@
 
 - metadata management
 - note formatting
-- pipeline for external plugins: dataview/obsidian-git 
-- youtube transcripts
+- pipeline for external plugins: [dataview](https://github.com/blacksmithgu/obsidian-dataview)/[obsidian-git](https://github.com/Vinzent03/obsidian-git) 
+- youtube transcripts [lstrzepek/obsidian-yt-transcript](https://github.com/lstrzepek/obsidian-yt-transcript)
 - HUGO blox pipeline
 - webviewer ribbons
 - YAML resume preview
-- ai support: ollama local api
+- ai support:
+  - ollama local api. [hinterdupfinger/obsidian-ollama](https://github.com/hinterdupfinger/obsidian-ollama)
 - custom views: iframe, console, resume
 
 
