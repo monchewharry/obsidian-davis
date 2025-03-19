@@ -11,6 +11,7 @@
 - HUGO blox pipeline
 - webviewer ribbons
 - YAML resume preview
+- ai support: ollama local api
 - custom views: iframe, console, resume
 
 
