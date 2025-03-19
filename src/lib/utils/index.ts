@@ -12,3 +12,6 @@ export {
 	processContent,
 } from "./noteFormatter";
 export { getFolderFrontmatterKeys, getMetadata } from "./frontmatter";
+export { kebabCase, ollamaEditorCallback } from "./ollama";
+export { runOtherPluginCommand } from "./pluginApi";
+export { formatTimestamp, getTranscriptBlocks, highlightText, YoutubeTranscript, YoutubeTranscriptError } from "./ytTranscript";

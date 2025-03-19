@@ -35,8 +35,7 @@ import { publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
 import MyPlugin from "@/main";
 import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
 import { YtPromptModal } from "./Modals/ytPromptModal";
-import { runOtherPluginCommand } from "@/lib/utils/pluginApi";
-import { kebabCase, ollamaEditorCallback } from "@/lib/utils/ollama";
+import { runOtherPluginCommand, kebabCase, ollamaEditorCallback } from "@/lib/utils";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/

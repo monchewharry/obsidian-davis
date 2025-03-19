@@ -3,7 +3,7 @@ import { CustomViewTypes } from "@/types/viewType";
 import { WorkspaceLeaf, Menu, Notice, TFile } from "obsidian";
 import MyPlugin from "@/main";
 import { TranscriptBlock, TranscriptResponse } from "@/types/ytTranscrpt";
-import { formatTimestamp, getTranscriptBlocks, highlightText, YoutubeTranscript, YoutubeTranscriptError } from "@/lib/utils/ytTranscript";
+import { formatTimestamp, getTranscriptBlocks, highlightText, YoutubeTranscript, YoutubeTranscriptError } from "@/lib/utils";
 export class TranscriptView extends MyItemView {
 	private url: string;
 	isDataLoaded: boolean;

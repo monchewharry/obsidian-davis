@@ -14,7 +14,7 @@ export const ollamaEditorCallback = (editor: Editor, plugin: MyPlugin, command: 
 
 	const cursorPosition = editor.getCursor();
 
-	editor.replaceRange("\n✍️\n", cursorPosition);
+	editor.replaceRange("✍️", cursorPosition);
 
 	requestUrl({
 		method: "POST",
@@ -33,11 +33,9 @@ export const ollamaEditorCallback = (editor: Editor, plugin: MyPlugin, command: 
 				.filter((step) => step && step.length > 0)
 				.map((step) => JSON.parse(step));
 
+			const output = '\n```markdown\n' + steps.map((step) => step.response).join("").trim() + '\n```\n';
 			editor.replaceRange(
-				steps
-					.map((step) => step.response)
-					.join("")
-					.trim(),
+				output,
 				cursorPosition,
 				{
 					ch: cursorPosition.ch + 1,
