@@ -4,9 +4,11 @@
 
 ## features
 
-- metadata management
+- metadata management: [technohiker/obsidian-multi-properties](https://github.com/technohiker/obsidian-multi-properties)
 - note formatting
-- pipeline for external plugins: [dataview](https://github.com/blacksmithgu/obsidian-dataview)/[obsidian-git](https://github.com/Vinzent03/obsidian-git) 
+- pipeline for external plugins: 
+  - [dataview](https://github.com/blacksmithgu/obsidian-dataview)
+  - [obsidian-git](https://github.com/Vinzent03/obsidian-git) 
 - youtube transcripts [lstrzepek/obsidian-yt-transcript](https://github.com/lstrzepek/obsidian-yt-transcript)
 - HUGO blox pipeline
 - webviewer ribbons

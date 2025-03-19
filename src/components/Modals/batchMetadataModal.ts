@@ -23,7 +23,7 @@ export default class BatchMetadataModal extends MyModal {
 	}
 
 	async onOpen() {
-		const { contentEl, titleEl, modalEl, containerEl } = this;
+		const { contentEl } = this;
 
 		contentEl.empty();
 		// Folder selection
