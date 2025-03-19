@@ -36,6 +36,7 @@ import MyPlugin from "@/main";
 import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
 import { YtPromptModal } from "./Modals/ytPromptModal";
 import { runOtherPluginCommand } from "@/lib/utils/pluginApi";
+import { kebabCase, ollamaEditorCallback } from "@/lib/utils/ollama";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -196,7 +197,7 @@ export const eventRefList = (app: App): EventRef[] => {
 };
 
 export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin): Command[] => {
-	return [
+	const commands: Command[] = [
 		{
 			id: "open-bilibili-videos",
 			name: "Open Bilibili Videos",
@@ -358,4 +359,17 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 			},
 		},
 	];
+
+	// Add Ollama commands
+	plugin.settings.commands.forEach((command) => {
+		commands.push({
+			id: kebabCase(command.name),
+			name: command.name,
+			editorCallback: (editor: Editor) => {
+				ollamaEditorCallback(editor, plugin, command);
+			},
+		});
+	});
+
+	return commands;
 };
