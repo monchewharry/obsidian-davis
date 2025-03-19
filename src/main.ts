@@ -89,6 +89,11 @@ export default class MyPlugin extends Plugin {
 		this.app.workspace.detachLeavesOfType(CustomViewTypes.RESUME_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(CustomViewTypes.IframeFullViewTypes.CHATBOT_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(BuiltInLeafTypes.Webviewer);
+		this.app.workspace.detachLeavesOfType(CustomViewTypes.CONSOLE_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(CustomViewTypes.IZTRO_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(CustomViewTypes.VIDEO_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
 	}
 	async saveSettings() {
 		await this.saveData(this.settings);

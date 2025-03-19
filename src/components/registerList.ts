@@ -62,7 +62,7 @@ export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 		},
 		{
 			icon: "video",
-			title: "Open Video Archive",
+			title: "Open Local Video Archive",
 			callback: async () => {
 				await activateSideBarView(app, CustomViewTypes.VIDEO_VIEW_TYPE);
 			},
@@ -100,7 +100,7 @@ export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 		},
 		{
 			icon: "sparkle",
-			title: "open gemini",
+			title: "Open Gemini AI",
 			callback: async (evt: MouseEvent) => {
 				await activateSideBarView(app, "webviewer", {
 					url: "https://gemini.google.com/app",
@@ -110,7 +110,7 @@ export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 		},
 		{
 			icon: "contact",
-			title: "open personal website",
+			title: "Open Personal Website",
 			callback: async (evt: MouseEvent) => {
 				await activateSideBarView(app, "webviewer", {
 					url: settings.personalWebsiteUrl, // https://monchewharry.github.io/
@@ -170,7 +170,7 @@ export const viewList = (plugin: MyPlugin): ViewList[] => [
 		viewCreator: (leaf) =>
 			new IframeView(
 				leaf,
-				"https://player.bilibili.com/player.html?isOutside=true&aid=1256358045&bvid=BV1KE4m1d7C4&cid=1639341950&p=1",//"https://nextjs-chat-ruby-sigma-91.vercel.app",
+				"https://nextjs-chat-ruby-sigma-91.vercel.app",
 				CustomViewTypes.IframeFullViewTypes.CHATBOT_VIEW_TYPE,
 				"Chatbot"
 			),
@@ -270,17 +270,7 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 					/^(---\n[\s\S]*?\n---)([\s\S]*)$/,
 					"$1"
 				);
-				// remove the <style> part, replace tag name <body> with <bodyResume>,
-				// <section> -> <div class="section">; <section class="xxx"> -> <div class="section-xxx"
 				const mdHtml = html.replace(/<style[\s\S]*?<\/style>/g, "");
-				// .replace(/<body/g, "<bodyResume")
-				// .replace(/<\/body/g, "</bodyResume");
-				// .replace(
-				// 	/<section class="([^"]*)"/g,
-				// 	'<div class="section-$1"'
-				// )
-				// .replace(/<section/g, '<div class="section"')
-				// .replace(/<\/section/g, "</div");
 
 				const newContent = clearExisting + "\n\n" + mdHtml;
 				editor.setValue(newContent);
