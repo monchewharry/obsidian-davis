@@ -359,10 +359,10 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 		},
 	];
 
-	// Add Ollama summary command
+	// Add Ollama summary command for frontmatter
 	commands.push({
 		id: "ollama-generate-summary",
-		name: "Generate AI Summary",
+		name: "AI Generate Summary to Frontmatter",
 		editorCallback: (editor: Editor) => {
 			ollamaSummaryField(editor, plugin, false);
 		},
@@ -370,7 +370,7 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 
 	commands.push({
 		id: "ollama-update-summary",
-		name: "Update AI Summary",
+		name: "AI Update Summary in Frontmatter",
 		editorCallback: (editor: Editor) => {
 			ollamaSummaryField(editor, plugin, true);
 		},
