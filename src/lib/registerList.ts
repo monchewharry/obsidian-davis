@@ -34,7 +34,7 @@ import { DavisSettings } from "@/lib/config/settings";
 import { publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
 import MyPlugin from "@/main";
 import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
-import { YtPromptModal } from "./Modals/ytPromptModal";
+import { YtPromptModal } from "../components/Modals/ytPromptModal";
 import { runOtherPluginCommand, kebabCase, ollamaEditorCallback, ollamaSummaryField } from "@/lib/utils";
 
 interface RibbonList {

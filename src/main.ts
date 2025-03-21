@@ -4,7 +4,7 @@ import {
 	ribbonList,
 	statusBarList,
 	viewList,
-} from "@/components/registerList";
+} from "@/lib/registerList";
 import { DavisSettings, DEFAULT_SETTINGS } from '@/lib/config/settings';
 import { Notice, Plugin } from "obsidian";
 import { isPluginEnabled, loadFormatterConfig } from "@/lib/utils";
