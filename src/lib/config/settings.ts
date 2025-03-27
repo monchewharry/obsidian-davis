@@ -63,7 +63,7 @@ export const DEFAULT_SETTINGS: DavisSettings = {
 	ffmpegPath: '/opt/homebrew/bin/ffmpeg',
 	youtubeShortsPath: 'private/videoURL/YoutubeShorts.md',
 	iframeVideoPath: 'private/videoURL/iframes.md',
-	personalWebsiteUrl: 'https://monchewharry.github.io/',
+	personalWebsiteUrl: 'https://portfolio.bigo-ai.top',
 	ollamaUrl: "http://localhost:11434",
 	defaultModel: "llama3.2",
 	commands: [
