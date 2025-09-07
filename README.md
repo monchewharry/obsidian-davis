@@ -1,7 +1,9 @@
 # Obsidian My Plugin 
 
 ```bash
-
+# run and test in dev mode
+pnpm install
+pnpm dev
 ```
 
 ## features
