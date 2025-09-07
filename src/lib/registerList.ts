@@ -35,7 +35,12 @@ import { publishHugoBlog } from "@/lib/Commands/hugoBlogPublisher";
 import MyPlugin from "@/main";
 import { openYtTranscriptView } from "@/lib/Commands/ytTranscriptView";
 import { YtPromptModal } from "../components/Modals/ytPromptModal";
-import { runOtherPluginCommand, kebabCase, ollamaEditorCallback, ollamaSummaryField } from "@/lib/utils";
+import {
+	runOtherPluginCommand,
+	kebabCase,
+	ollamaEditorCallback,
+	ollamaSummaryField,
+} from "@/lib/utils";
 
 interface RibbonList {
 	icon: IconName; // Ribbons, https://lucide.dev/
@@ -46,27 +51,27 @@ interface RibbonList {
 
 export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 	return [
-		{
-			icon: "play-circle",
-			title: "Open iframe Videos",
-			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE);
-			},
-		},
-		{
-			icon: "youtube",
-			title: "Open YouTube Shorts",
-			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
-			},
-		},
-		{
-			icon: "video",
-			title: "Open Local Video Archive",
-			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.VIDEO_VIEW_TYPE);
-			},
-		},
+		// {
+		// 	icon: "play-circle",
+		// 	title: "Open iframe Videos",
+		// 	callback: async () => {
+		// 		await activateSideBarView(app, CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE);
+		// 	},
+		// },
+		// {
+		// 	icon: "youtube",
+		// 	title: "Open YouTube Shorts",
+		// 	callback: async () => {
+		// 		await activateSideBarView(app, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
+		// 	},
+		// },
+		// {
+		// 	icon: "video",
+		// 	title: "Open Local Video Archive",
+		// 	callback: async () => {
+		// 		await activateSideBarView(app, CustomViewTypes.VIDEO_VIEW_TYPE);
+		// 	},
+		// },
 		{
 			icon: "arrow-up-from-line",
 			title: "Commit and Sync",
@@ -98,26 +103,26 @@ export const ribbonList = (app: App, settings: DavisSettings): RibbonList[] => {
 				);
 			},
 		},
-		{
-			icon: "sparkle",
-			title: "Open Gemini AI",
-			callback: async (evt: MouseEvent) => {
-				await activateSideBarView(app, "webviewer", {
-					url: "https://gemini.google.com/app",
-					navigate: true,
-				});
-			},
-		},
-		{
-			icon: "contact",
-			title: "Open Personal Website",
-			callback: async (evt: MouseEvent) => {
-				await activateSideBarView(app, "webviewer", {
-					url: settings.personalWebsiteUrl, // https://monchewharry.github.io/
-					navigate: true,
-				});
-			},
-		},
+		// {
+		// 	icon: "sparkle",
+		// 	title: "Open Gemini AI",
+		// 	callback: async (evt: MouseEvent) => {
+		// 		await activateSideBarView(app, "webviewer", {
+		// 			url: "https://gemini.google.com/app",
+		// 			navigate: true,
+		// 		});
+		// 	},
+		// },
+		// {
+		// 	icon: "contact",
+		// 	title: "Open Personal Website",
+		// 	callback: async (evt: MouseEvent) => {
+		// 		await activateSideBarView(app, "webviewer", {
+		// 			url: settings.personalWebsiteUrl, // https://monchewharry.github.io/
+		// 			navigate: true,
+		// 		});
+		// 	},
+		// },
 	];
 };
 
@@ -195,35 +200,45 @@ export const eventRefList = (app: App): EventRef[] => {
 	];
 };
 
-export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin): Command[] => {
+export const commandList = (
+	app: App,
+	settings: DavisSettings,
+	plugin: MyPlugin
+): Command[] => {
 	const commands: Command[] = [
 		{
 			id: "open-bilibili-videos",
 			name: "Open Bilibili Videos",
 			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE);
-			}
+				await activateSideBarView(
+					app,
+					CustomViewTypes.IFRAME_VIDEO_VIEW_TYPE
+				);
+			},
 		},
 		{
 			id: "open-youtube-shorts",
 			name: "Open YouTube Shorts",
 			callback: async () => {
-				await activateSideBarView(app, CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE);
-			}
+				await activateSideBarView(
+					app,
+					CustomViewTypes.YOUTUBE_SHORT_VIEW_TYPE
+				);
+			},
 		},
 		{
 			id: "my-video-view",
 			name: "Open Video Archive",
 			callback: async () => {
 				await activateSideBarView(app, CustomViewTypes.VIDEO_VIEW_TYPE);
-			}
+			},
 		},
 		{
 			id: "my-commit-and-sync",
 			name: "Commit and Sync (obsidian-git)",
 			callback: async () => {
 				runOtherPluginCommand(app, "obsidian-git", "push");
-			}
+			},
 		},
 		{
 			id: "transcript-from-prompt",
@@ -231,16 +246,16 @@ export const commandList = (app: App, settings: DavisSettings, plugin: MyPlugin)
 			callback: async () => {
 				const prompt = new YtPromptModal(app);
 				const url: string = await new Promise((resolve) =>
-					prompt.openAndGetValue(resolve, () => { }),
+					prompt.openAndGetValue(resolve, () => {})
 				);
 				if (url) {
 					openYtTranscriptView(app, url);
 				}
-			}
+			},
 		},
 		{
-			id: 'my-regex-replace',
-			name: 'Find and Replace using regular expressions',
+			id: "my-regex-replace",
+			name: "Find and Replace using regular expressions",
 			editorCallback: (editor) => {
 				regexCommand(app, editor, settings, plugin);
 			},
